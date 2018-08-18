@@ -12,10 +12,7 @@
 <li>课程多维度教学，基础课程，进阶课程，提高课程，lollipopGo游戏框架实战课程等等</li>
 <li>同时我们的免费课程也在持续更新中; 点击访问：<a href="http://gopher.ke.qq.com" title="Title">腾讯课堂</a></li>
 </ol>
-<Br/>
-![Alt text](/第一季%20Go语言基础、进阶、提高课程/pic/xuanc.png)
-<Br/>
-*****
+<img src="第一季%20Go语言基础、进阶、提高课程/pic/xuanc.png"/>
 
  <div class="footer">
         &copy; 成都字节跳动教育咨询有限公司(www.ByteEdu.Com)
