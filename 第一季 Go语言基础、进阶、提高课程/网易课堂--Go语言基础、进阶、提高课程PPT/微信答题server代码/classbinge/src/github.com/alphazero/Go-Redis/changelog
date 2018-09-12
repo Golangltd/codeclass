@@ -1,0 +1,12 @@
+2011-09-21	Joubin <alphazero@sensesay.net>
+
+	* added .gitignore
+	* removed object files from bench/ e.g. synchclient
+	* update to go r60.1 compliant with redis 2.2.13
+	  incorporating the go source code changes made in https://github.com/alphazero/Go-Redis/pull/5
+	  Contributers are:
+		- simonjefford@github (Simon Jefford)
+		- tkawachi@github (KAWACHI Takashi)
+		- kpm@github 
+	  Note: maintaining Go-Redis dir structure as per design. 
+	  goinstall not yet tested.

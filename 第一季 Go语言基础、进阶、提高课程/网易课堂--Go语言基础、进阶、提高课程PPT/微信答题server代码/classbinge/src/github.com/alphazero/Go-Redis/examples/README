@@ -1,0 +1,12 @@
+* important *
+
+Examples always use DBs 10 and/or 13 and assume you have set the password in redis.conf to "go-redis".  
+
+If you are using either DB 10 or 13 for your own data make sure you change the ConnectionSpec details in the examples files, as the database may be flushed. 
+
+To build and run the examples, invoke the run cmd file with name of the example file (without extension).
+Note that you must first make and install go-redis (redis package).  See readme in the package directory for details.
+
+ex:
+./run ciao  
+

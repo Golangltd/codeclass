@@ -1,0 +1,16 @@
+Bench contains various benchmark applications for go-redis.  filenames starting with 'go' (e.g. gosynchclient.go) bench the associated go-redis client using multiple connections for concurrent benchmarks.  
+
+* important *
+
+Benchmarks (as with the tests and other exmples) always use DBs 10 and/or 13 and assume you have set the password in redis.conf to "go-redis".  
+
+If you are using either DB 10 or 13 for your own data make sure you change the ConnectionSpec details in the benchmark files.  These benchmarks, as with tests and examples, may repeatedly flush the connected db. 
+
+To build and run the bench, invoke the runbench cmd file with name of the benchmark file.
+Note that you must first build and install go-redis (redis package).  See README in package dir for details.
+
+i.e.:
+./runbench <filename>  
+
+ex: 
+runbench synchclient

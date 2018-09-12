@@ -1,0 +1,12 @@
+Redis: 
+	2.4.9
+
+Go:
+	Go1 (Release 1.0)  
+
+Test platform
+	darwin/amd64
+
+--
+March 30, 2012
+bushwick/nyc
