@@ -1,0 +1,24 @@
+<view>
+<!--轮播图-->
+  <swiper class="home-swiper" indicator-dots="true" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+    <block wx:for-items="{{lunboData}}">
+      <swiper-item>
+        <image src="{{item.imgurl}}" class="slide-image" />
+      </swiper-item>
+    </block>
+  </swiper>
+  <!-- 列表数据 -->
+<block wx:for='{{bookList}}'>
+   <view class='singleTrade' hover-class='item-press' catchtap='showTradeDetail' data-id='{{item.ID}}'>
+     <!-- <image src='{{item.bookpic}}' class='img' /> -->
+      <image src='../../images/bookpic/timg.jpg' class='img' />
+     <view class='a'>
+       <view class='name'>{{item.Name}}</view>
+     </view>
+     <view class='b'>
+       <view class='price'>￥{{item.Price}}金币</view>
+       <image src='' class='b_img' catchtap='deleteCollection' data-pos='{{index}}' />
+     </view>
+   </view>
+ </block>
+</view>

@@ -1,0 +1,47 @@
+{
+  "pages":[
+    "pages/book/book",
+    "pages/my/my",
+    "pages/soushu/soushu",
+    "pages/yushou/yushou"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "彬哥·读书平台",
+    "navigationBarTextStyle":"black",
+    "enablePullDownRefresh": true 
+  },
+  "tabBar": {
+    "selectedColor": "#20B3AD",
+    "color": "#999",
+    "borderStyle": "white",
+    "backgroundColor": "#F0F0F0",
+    "list": [
+      {
+        "pagePath": "pages/book/book",
+        "iconPath": "images/tabBar/home.png",
+        "selectedIconPath": "images/tabBar/homeSelected.png",
+        "text": "首页"
+      },
+      {
+        "text": "搜书",
+        "pagePath": "pages/soushu/soushu",
+        "iconPath": "images/tabBar/lease.png",
+        "selectedIconPath": "images/tabBar/leaseSelected.png"
+      },
+      {
+        "text": "预售",
+        "pagePath": "pages/yushou/yushou",
+        "iconPath": "images/tabBar/sale.png",
+        "selectedIconPath": "images/tabBar/saleSelected.png"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "iconPath": "images/tabBar/mine.png",
+        "selectedIconPath": "images/tabBar/mineSelected.png",
+        "text": "我的"
+      }
+    ]
+  }
+}

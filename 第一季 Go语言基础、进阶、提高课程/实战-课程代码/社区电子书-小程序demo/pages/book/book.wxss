@@ -1,0 +1,73 @@
+/* pages/booklist/book.wxss */
+/*轮播控件*/
+
+.home-swiper {
+  width: 100%;
+  height: 360rpx;
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+}
+
+
+.singleTrade {
+  background: #fff;
+  padding: 20rpx;
+  display: flex;
+  border-bottom: 20rpx solid #fafafa;
+}
+
+.item-press {
+  background: #fafafa;
+  padding: 20rpx;
+  display: flex;
+  border-bottom: 20rpx solid #fafafa;
+}
+
+.img {
+  width: 100px;
+  height: 100px;
+}
+
+.b_img {
+  width: 50rpx;
+  height: 50rpx;
+  bottom: 20rpx;
+}
+
+.a {
+  flex: 1;
+  margin: 0rpx 15rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.b {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.price {
+  font-size: 11pt;
+}
+
+.name {
+  font-size: 11pt;
+  line-height: 50rpx;
+  display: -webkit-box;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.desc {
+  font-size: 12pt;
+  color: gray;
+}

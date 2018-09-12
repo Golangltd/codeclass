@@ -1,0 +1,113 @@
+/* pages/soushu/soushu.wxss */
+page{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+ 
+/*搜索*/
+.search{
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+.search-bar{
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: #f4f4f4;
+}
+.search-wrap{
+  position: relative;
+  flex: auto;
+  display: flex;
+  align-items: center;
+  height: 80rpx;
+  padding: 0 20rpx;
+  background: #fff;
+  border-radius: 6rpx;
+}
+.search-wrap .icon-search{
+  margin-right: 10rpx;
+}
+.search-wrap .search-input{
+  flex: auto;
+  font-size: 28rpx;
+}
+.search-cancel{
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}
+ 
+/*搜索结果*/
+.search-result{
+  flex: auto;
+  position: relative;
+}
+.search-result scroll-view{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+.result-item{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20rpx 0 20rpx 110rpx;
+  overflow: hidden;
+  border-bottom: 2rpx solid #e5e5e5;
+}
+ 
+.result-item .media{
+  position: absolute;
+  left: 16rpx;
+  top: 16rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 999rpx;
+}
+.result-item .title,
+.result-item .subtitle{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 36rpx;
+}
+.result-item .title{
+  margin-bottom: 4rpx;
+  color: #000;
+}
+.result-item .subtitle{
+  color: #808080;
+  font-size: 24rpx;
+}
+.result-item:first-child .subtitle text{
+  margin-right: 20rpx;
+}
+.result-item:not(:first-child) .subtitle text:not(:first-child):before{
+  content: '/';
+  margin: 0 8rpx;
+}
+.loading{
+  padding: 10rpx;
+  text-align: center;
+}
+.loading:before{
+  display: inline-block;
+  margin-right: 5rpx;
+  vertical-align: middle;
+  content: '';
+  width: 40rpx;
+  height: 40rpx;
+  background: url(../../images/icon-loading.png) no-repeat;
+  background-size: contain;
+  animation: rotate 1s linear infinite;
+}
+.loading.complete:before{
+  display: none;
+}

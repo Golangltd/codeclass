@@ -1,0 +1,35 @@
+{
+    "window": {
+      "backgroundTextStyle": "light",
+      "navigationBarBackgroundColor": "#fff",
+      "navigationBarTitleText": "电子书列表",
+      "navigationBarTextStyle": "black",
+      "enablePullDownRefresh": true
+    },
+    "tabBar": {
+      "color": "#7A7E83",
+      "selectedColor": "#3cc51f",
+      "borderStyle": "black",
+      "backgroundColor": "#ffffff",
+      "list": [
+        {
+          "pagePath": "pages/main/simple/text",
+          "iconPath": "pages/image/basic.png",
+          "selectedIconPath": "pages/image/basic_HL.png",
+          "text": "基础"
+        },
+        {
+          "pagePath": "pages/main/advanced/text",
+          "iconPath": "pages/image/advance.png",
+          "selectedIconPath": "pages/image/advance_HL.png",
+          "text": "高级"
+        },
+        {
+          "pagePath": "pages/main/mine/text",
+          "iconPath": "pages/image/mine.png",
+          "selectedIconPath": "pages/image/mine_HL.png",
+          "text": "我的"
+        }
+      ]
+    }
+}
