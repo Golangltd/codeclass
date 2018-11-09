@@ -1,0 +1,44 @@
+1 注册消息
+
+消息定义：
+// 用户登陆协议
+type UserLogin struct {
+	LoginName string // 用户名
+	LoginPW   string // 密码
+}
+
+\F:\gocode\code\leafltd\src\LollipopGo\msg
+例如：
+var Processorbak network.Processor
+// 使用默认的 JSON 消息处理器（默认还提供了 protobuf 消息处理器）
+var Processor = json.NewProcessor()
+func init() {
+	Processor.Register(&Protocol.UserLogin{})
+	Processor.Register(&Protocol.UserRegister{})
+}
+
+2 路由设置
+F:\gocode\code\leafltd\src\LollipopGo\gate
+
+func init() {
+	msg.Processor.SetRouter(&Protocol.UserRegister{}, game.ChanRPC)
+	msg.Processor.SetRouter(&Protocol.UserLogin{}, login.ChanRPC)
+}
+
+3 广播流程
+
+	//测试发送广播消息
+	//	for i := 0; i < 10; i++ {
+	//		val, _ := onlineUser.MapSafe.Get(m.LoginName + "|connect")
+	//		val.(interface{}).(*gate.OnlineUser).Connection.WriteMsg(&Protocol.UserRegister{
+	//			LoginName: "++++++++++++++++client------------",
+	//		})
+	//	}
+4 查看连接数
+	netstat -nat|grep -i "8036"|wc -l
+5 查看http连接数
+    ps -ef|grep httpd|wc -l
+6 查出哪个IP地址连接最多,将其封了.
+netstat -na|grep ESTABLISHED|awk {print $5}|awk -F: {print $1}|sort|uniq -c|sort -r +0n
+
+netstat -na|grep SYN|awk {print $5}|awk -F: {print $1}|sort|uniq -c|sort -r +0n
