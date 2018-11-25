@@ -1,0 +1,39 @@
+; Copyright 2014 <chaishushan{AT}gmail.com>. All rights reserved.
+; Use of this source code is governed by a BSD-style
+; license that can be found in the LICENSE file.
+
+EXPORTS
+	vi_setVerbose
+	vi_setComMultiThreaded
+	vi_listDevices
+	vi_getDeviceName
+	vi_getDeviceIdFromName
+
+	vi_device_new
+	vi_device_delete
+	vi_device_setUseCallback
+	vi_device_setIdealFramerate
+	vi_device_setAutoReconnectOnFreeze
+	vi_device_setupDevice
+	vi_device_setupDeviceAndSize
+	vi_device_setupDeviceCaptureCards
+	vi_device_setupDeviceCaptureCardsAndSize
+	vi_device_setFormat
+	vi_device_setRequestedMediaSubType
+	vi_device_isFrameNew
+	vi_device_isDeviceSetup
+	vi_device_getPixels
+	vi_device_getPixelsWithBuffer
+	vi_device_showSettingsWindow
+	vi_device_setVideoSettingFilter
+	vi_device_setVideoSettingFilterPct
+	vi_device_getVideoSettingFilter
+	vi_device_setVideoSettingCamera
+	vi_device_setVideoSettingCameraPct
+	vi_device_getVideoSettingCamera
+	vi_device_getWidth
+	vi_device_getHeight
+	vi_device_getSize
+	vi_device_stopDevice
+	vi_device_restartDevice
+

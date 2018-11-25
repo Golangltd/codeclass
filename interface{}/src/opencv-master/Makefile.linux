@@ -1,0 +1,74 @@
+# Copyright 2014 <chaishushan{AT}gmail.com>. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+TARG=opencv110
+
+CXCORE_DIR=./opencv110/cxcore
+CXCORE_INC=-I$(CXCORE_DIR)/include -I$(CXCORE_DIR)/src
+CXCORE_CPP=$(wildcard $(CXCORE_DIR)/src/*.cpp)
+CXCORE_OBJ=$(patsubst %.cpp,%.o,$(CXCORE_CPP))
+
+CV_DIR=./opencv110/cv
+CV_INC=-I$(CV_DIR)/include -I$(CV_DIR)/src
+CV_CPP=$(wildcard $(CV_DIR)/src/*.cpp)
+CV_OBJ=$(patsubst %.cpp,%.o,$(CV_CPP))
+
+CVAUX_DIR=./opencv110/cvaux
+CVAUX_INC=-I$(CVAUX_DIR)/include -I$(CVAUX_DIR)/src
+CVAUX_CPP=$(wildcard $(CVAUX_DIR)/src/*.cpp)
+CVAUX_OBJ=$(patsubst %.cpp,%.o,$(CVAUX_CPP))
+
+ML_DIR=./opencv110/ml
+ML_INC=-I$(ML_DIR)/include -I$(ML_DIR)/src
+ML_CPP=$(wildcard $(ML_DIR)/src/*.cpp)
+ML_OBJ=$(patsubst %.cpp,%.o,$(ML_CPP))
+
+HIGHGUI_DIR=./opencv110/highgui
+HIGHGUI_INC=-I$(HIGHGUI_DIR)/include -I$(HIGHGUI_DIR)/src
+HIGHGUI_CPP=$(wildcard $(HIGHGUI_DIR)/src/*.cpp) $(wildcard $(HIGHGUI_DIR)/src/linux/*.cpp)
+HIGHGUI_OBJ=$(patsubst %.cpp,%.o,$(HIGHGUI_CPP))
+
+OPENCV_INC=$(CXCORE_INC) $(CV_INC) $(CVAUX_INC) $(ML_INC) $(HIGHGUI_INC)
+OPENCV_OBJ=$(CXCORE_OBJ) $(CV_OBJ) $(CVAUX_OBJ) $(ML_OBJ) $(HIGHGUI_OBJ)
+
+UNICAP_CCFLAGS=`pkg-config libunicap --cflags`
+UNICAP_LDFLAGS=`pkg-config libunicap --libs`
+
+GLIB_CCFLAGS=`pkg-config glib-2.0 --cflags`
+GLIB_LDFLAGS=`pkg-config glib-2.0 --libs`
+
+XINE_CCFLAGS=`pkg-config libxine --cflags` -DHAVE_XINE
+XINE_LDFLAGS=`pkg-config libxine --libs`
+
+FFMPEG_LIBS=libavdevice libavformat libavfilter libavcodec libswscale libavutil                          
+FFMPEG_CCFLAGS=$(shell pkg-config --cflags $(FFMPEG_LIBS)) -DHAVE_FFMPEG -DHAVE_GENTOO_FFMPEG -DHAVE_FFMPEG_SWSCALE
+FFMPEG_LDFLAGS=$(shell pkg-config --libs $(FFMPEG_LIBS))
+
+GSTREAMER_CCFLAGS=`pkg-config gstreamer-0.10 --cflags` #-DHAVE_GSTREAMER
+GSTREAMER_LDFLAGS=`pkg-config gstreamer-0.10 --libs`
+
+# HAVE_CAMV4L2
+
+GTK_CCFLAGS=`pkg-config gtk+-2.0 --cflags` -DHAVE_GTK
+GTK_LDFLAGS=`pkg-config gtk+-2.0 --libs`
+
+X_CCFLAGS=$(UNICAP_CCFLAGS) $(GLIB_CCFLAGS) $(XINE_CCFLAGS) $(FFMPEG_CCFLAGS) $(GSTREAMER_CCFLAGS) $(GTK_CCFLAGS)
+X_LDFLAGS=$(UNICAP_LDFLAGS) $(GLIB_LDFLAGS) $(XINE_LDFLAGS) $(FFMPEG_LDFLAGS) $(GSTREAMER_LDFLAGS) $(GTK_LDFLAGS)
+
+CC=g++
+LD=ar
+CCFLAGS=$(X_CCFLAGS) $(OPENCV_INC) -DSTRSAFE_NO_DEPRECATE -DCVAPI_EXPORTS -DCV_NO_BACKWARD_COMPATIBILITY -DHAVE_CAMV4L2 -DHAVE_CAMV4L
+LDFLAGS=rcs #$(X_LDFLAGS)
+
+default: $(OPENCV_OBJ)
+	$(LD) $(LDFLAGS) lib$(TARG).a $(OPENCV_OBJ)
+
+clean:
+	-rm $(OPENCV_OBJ)
+	-rm *.so
+	-rm *.a
+
+%.o: %.cpp
+	$(CC) -c $(CCFLAGS) $< -o $@
+
