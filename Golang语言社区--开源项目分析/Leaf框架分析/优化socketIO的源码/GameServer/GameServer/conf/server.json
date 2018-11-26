@@ -1,0 +1,7 @@
+{
+	"LogLevel": "debug",
+	"LogPath": "",
+	"WSAddr": "192.168.1.18:6666",
+	"MaxConnNum": 20000,
+	"CMDpassword":"1992424"
+}
