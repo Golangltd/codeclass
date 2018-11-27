@@ -33,6 +33,7 @@ func main() {
 	int1, _ := strconv.Atoi(count)
 	GW.Add(int1)
 	Scount = int1 * loops
+	fmt.Println("Robot 客户端模拟！")
 	for i := 0; i < int1; i++ {
 		go GoroutineFunc(loops)
 	}
@@ -47,7 +48,7 @@ func main() {
 
 }
 func GoroutineFunc(loops int) {
-	fmt.Println("Robot 客户端模拟！")
+
 	url := "ws://" + *addr + "/GolangLtd"
 	ws, err := websocket.Dial(url, "", "test://golang/-")
 	if err != nil {
