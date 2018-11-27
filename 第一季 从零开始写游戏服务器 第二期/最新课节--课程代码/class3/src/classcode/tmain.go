@@ -29,9 +29,11 @@ func main() {
 		strServerType = os.Args[2]
 	}
 	glog.Info(strport)
+	glog.Info(strServerType)
 	glog.Info("Golang语言社区")
 	glog.Flush()
 	if strServerType == strServerType_GW {
+		glog.Info("Golang语言社区:网关服务器启动！")
 		http.Handle("/GolangLtd", websocket.Handler(wwwGolangLtd))
 		if err := http.ListenAndServe(":"+strport, nil); err != nil {
 			glog.Error("网络错误", err)

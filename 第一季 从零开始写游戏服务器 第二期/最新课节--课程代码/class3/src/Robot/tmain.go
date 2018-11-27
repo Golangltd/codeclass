@@ -43,13 +43,13 @@ func main1() {
 	fmt.Println("Cysle TPS:", float64(int1*loops)/elapsed.Seconds())
 	fmt.Println("Taken Time(s) :", elapsed)
 	fmt.Println("Average Latency time(ms):", elapsed.Seconds()*1000/(float64(int1*loops)))
-	//-------------------------------------------------------------------
+	// -------------------------------------------------------------------
 
 }
 func GoroutineFunc(loops int) {
 	fmt.Println("Robot 客户端模拟！")
 	url := "ws://" + *addr + "/GolangLtd"
-	ws, err := websocket.Dial(url, "", "test://golang/")
+	ws, err := websocket.Dial(url, "", "test://golang/-")
 	if err != nil {
 		fmt.Println("err:", err.Error())
 		return
@@ -67,8 +67,8 @@ func GoroutineFunc(loops int) {
 			return
 		}
 		// decode
-		//fmt.Println(strings.Trim("", "\""))
-		//fmt.Println(content)
+		// fmt.Println(strings.Trim("", "\""))
+		// fmt.Println(content)
 		content = strings.Replace(content, "\"", "", -1)
 		contentstr, errr := base64Decode([]byte(content))
 		if errr != nil {
@@ -173,7 +173,7 @@ func Send(conn *websocket.Conn, Itype string) {
 		data := &Proto2.Net_HeartBeat{
 			Protocol:  Proto.GameNet_Proto,
 			Protocol2: Proto2.Net_HeartBeatProto2,
-			OpenID:    "22323",
+			OpenID:    "22323223232232322323223232232322323223232232322323223232232322323",
 		}
 		// 3 发送数据到服务器
 		PlayerSendToServer(conn, data)
