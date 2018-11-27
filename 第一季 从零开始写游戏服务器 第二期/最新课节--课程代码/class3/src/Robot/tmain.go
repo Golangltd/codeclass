@@ -21,7 +21,7 @@ import (
 var GW sync.WaitGroup
 var Scount int
 
-func main1() {
+func main() {
 
 	fmt.Println(os.Args[1:])
 	fmt.Println(flag.Arg(1))
@@ -101,7 +101,7 @@ var connbak *websocket.Conn
 // 1 robot客户端 我们是可以一起链接的 ---> websocket.Dial 每次都返回一个
 // 2 多个 websocket.Dial   --->  多个客户端的链接
 
-func main() {
+func main1() {
 	fmt.Println("Robot 客户端模拟！")
 	url := "ws://" + *addr + "/GolangLtd"
 	ws, err := websocket.Dial(url, "", "test://golang/")
@@ -191,7 +191,7 @@ func PlayerSendToServer(conn *websocket.Conn, data interface{}) {
 		fmt.Println("err:", err.Error())
 		return
 	}
-	///fmt.Println("jsons:", string(jsons))
+	//fmt.Println("jsons:", string(jsons))
 	errq := websocket.Message.Send(conn, jsons)
 	if errq != nil {
 		fmt.Println(errq)
