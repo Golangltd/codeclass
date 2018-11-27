@@ -96,12 +96,12 @@ func (this *NetDataConn) HandleCltProtocol(protocol interface{}, protocol2 inter
 	}()
 
 	// 分发处理  --- 首先判断主协议存在，再判断子协议存在不
-	glog.Info(protocol)
-	glog.Info(Proto.GameData_Proto)
+	//	glog.Info(protocol)
+	//	glog.Info(Proto.GameData_Proto)
 
 	//类型
-	glog.Info(typeof(protocol))
-	glog.Info(typeof(Proto.GameData_Proto))
+	//	glog.Info(typeof(protocol))
+	//	glog.Info(typeof(Proto.GameData_Proto))
 	switch protocol {
 	case float64(Proto.G_GateWay_Proto):
 		{
@@ -173,7 +173,6 @@ func (this *NetDataConn) PlayerRun(ProtocolData map[string]interface{}) {
 	// 发送数据给客户端了
 	//Broadcast(data)
 	this.PlayerSendMessage(data)
-	glog.Info(data)
 	return
 }
 

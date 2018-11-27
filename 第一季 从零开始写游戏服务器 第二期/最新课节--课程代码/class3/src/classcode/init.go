@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"go-concurrentMap-master"
+	"strings"
 
 	"code.google.com/p/go.net/websocket"
 )
@@ -16,6 +18,7 @@ var G_Net_Count map[string]int
 var M *concurrent.ConcurrentMap // 并发安全的
 var addr = flag.String("addr", "127.0.0.1:8888", "http service address")
 var WS *websocket.Conn
+var icount, icounttmp int
 
 // 游戏服务器的初始化
 func init() {
@@ -47,4 +50,34 @@ func GameServerINIT() {
 		return
 	}
 	go GS2GW_Timer(WS)
+	go GameServerReceive(WS)
+}
+
+// 处理数据的返回
+func GameServerReceive(ws *websocket.Conn) {
+	for {
+		var content string
+		err := websocket.Message.Receive(ws, &content)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		// decode
+		fmt.Println(strings.Trim("", "\""))
+		fmt.Println(content)
+		content = strings.Replace(content, "\"", "", -1)
+		contentstr, errr := base64Decode([]byte(content))
+		if errr != nil {
+			fmt.Println(errr)
+		}
+		// 解析数据
+		// 心跳数据 --
+		icounttmp++
+		fmt.Println("返回数据：", string(contentstr))
+	}
+}
+
+// 解码
+func base64Decode(src []byte) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(string(src))
 }

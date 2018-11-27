@@ -3,7 +3,6 @@ package main
 import (
 	"Proto"
 	"Proto/Proto2"
-	"fmt"
 	"time"
 
 	"code.google.com/p/go.net/websocket"
@@ -36,7 +35,6 @@ func Timer(conn *websocket.Conn) {
 				StrRunZ:   "22",
 			}
 			PlayerSendToServer(conn, datapro)
-			fmt.Println("sss")
 		}
 	}
 }
