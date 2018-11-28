@@ -21,7 +21,7 @@ import (
 var GW sync.WaitGroup
 var Scount int
 
-func main() {
+func main1() {
 
 	fmt.Println(os.Args[1:])
 	fmt.Println(flag.Arg(1))
@@ -33,7 +33,6 @@ func main() {
 	int1, _ := strconv.Atoi(count)
 	GW.Add(int1)
 	Scount = int1 * loops
-	fmt.Println("Robot 客户端模拟！")
 	for i := 0; i < int1; i++ {
 		go GoroutineFunc(loops)
 	}
@@ -44,13 +43,13 @@ func main() {
 	fmt.Println("Cysle TPS:", float64(int1*loops)/elapsed.Seconds())
 	fmt.Println("Taken Time(s) :", elapsed)
 	fmt.Println("Average Latency time(ms):", elapsed.Seconds()*1000/(float64(int1*loops)))
-	// -------------------------------------------------------------------
+	//-------------------------------------------------------------------
 
 }
 func GoroutineFunc(loops int) {
-
+	fmt.Println("Robot 客户端模拟！")
 	url := "ws://" + *addr + "/GolangLtd"
-	ws, err := websocket.Dial(url, "", "test://golang/-")
+	ws, err := websocket.Dial(url, "", "test://golang/")
 	if err != nil {
 		fmt.Println("err:", err.Error())
 		return
@@ -68,8 +67,8 @@ func GoroutineFunc(loops int) {
 			return
 		}
 		// decode
-		// fmt.Println(strings.Trim("", "\""))
-		// fmt.Println(content)
+		//fmt.Println(strings.Trim("", "\""))
+		//fmt.Println(content)
 		content = strings.Replace(content, "\"", "", -1)
 		contentstr, errr := base64Decode([]byte(content))
 		if errr != nil {
@@ -102,7 +101,7 @@ var connbak *websocket.Conn
 // 1 robot客户端 我们是可以一起链接的 ---> websocket.Dial 每次都返回一个
 // 2 多个 websocket.Dial   --->  多个客户端的链接
 
-func main1() {
+func main() {
 	fmt.Println("Robot 客户端模拟！")
 	url := "ws://" + *addr + "/GolangLtd"
 	ws, err := websocket.Dial(url, "", "test://golang/")
@@ -174,7 +173,7 @@ func Send(conn *websocket.Conn, Itype string) {
 		data := &Proto2.Net_HeartBeat{
 			Protocol:  Proto.GameNet_Proto,
 			Protocol2: Proto2.Net_HeartBeatProto2,
-			OpenID:    "22323223232232322323223232232322323223232232322323223232232322323",
+			OpenID:    "22323",
 		}
 		// 3 发送数据到服务器
 		PlayerSendToServer(conn, data)
@@ -192,7 +191,7 @@ func PlayerSendToServer(conn *websocket.Conn, data interface{}) {
 		fmt.Println("err:", err.Error())
 		return
 	}
-	//fmt.Println("jsons:", string(jsons))
+	///fmt.Println("jsons:", string(jsons))
 	errq := websocket.Message.Send(conn, jsons)
 	if errq != nil {
 		fmt.Println(errq)

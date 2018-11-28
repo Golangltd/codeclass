@@ -4,6 +4,7 @@ import (
 	"classcode/Protocol"
 	"classcode/Protocol/Proto2"
 	"glog-master"
+	"os"
 	"strings"
 	"time"
 
@@ -119,12 +120,16 @@ func GS2GW_Timer(ws *websocket.Conn) {
 				data := &Proto2.Net_HeartBeat{
 					Protocol:  Proto.GameNet_Proto,
 					Protocol2: Proto2.Net_HeartBeatProto2,
-					OpenID:    "1233445677",
+					OpenID:    "12345123451234512345123451234512345123451234512345123451234512345",
 				}
 				// 3 发送数据到服务器
 				if ws != nil {
 					PlayerSendToServer(ws, data)
 					glog.Info("发送数据----：", data)
+					icount++
+					if icounttmp == icount-10 {
+						os.Exit(0)
+					}
 					continue
 				}
 				glog.Info("发送数据：", data)
