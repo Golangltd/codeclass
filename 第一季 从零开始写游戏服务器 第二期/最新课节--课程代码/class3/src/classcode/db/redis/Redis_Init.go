@@ -55,10 +55,10 @@ func INIT() {
 
 // 数据ping数据，保证书的可用性
 func Redis_Ping(client *redis.Client) {
-	r_timer := time.Tick(time.Second * 5)
+
 	for {
 		select {
-		case <-r_timer.C:
+		case <-time.After(time.Second * 5):
 			pong, err := client.Ping().Result()
 			if err != nil {
 				fmt.Println(err)

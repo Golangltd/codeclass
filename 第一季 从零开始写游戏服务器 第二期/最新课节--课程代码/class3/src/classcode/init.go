@@ -1,7 +1,7 @@
 package main
 
 import (
-	"classcode/db/redis"
+	_ "classcode/db/redis"
 	"encoding/base64"
 	"flag"
 	"fmt"
@@ -73,7 +73,7 @@ func GameServerReceive(ws *websocket.Conn) {
 		if errr != nil {
 			fmt.Println(errr)
 		}
-		// 解析数据
+		// 解析数据 --
 		// 心跳数据 --
 		icounttmp++
 		fmt.Println("返回数据：", string(contentstr))
