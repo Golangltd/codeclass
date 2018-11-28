@@ -14,7 +14,7 @@ const (
 type C2S_HallPlayerLogin struct {
 	Protocol  int    // 主协议 -- 模块化
 	Protocol2 int    // 子协议 -- 模块化的功能
-	Token     string // 信息 token --
+	Token     string // 信息 token
 }
 
 // 服务器-->N*客户端(广播出去所有的玩家)
