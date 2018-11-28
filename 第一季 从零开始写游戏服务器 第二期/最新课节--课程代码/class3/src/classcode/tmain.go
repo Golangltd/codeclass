@@ -24,6 +24,7 @@ func main() {
 	strServerType_GW := "GW"
 	strServerType_GS := "GS"
 	strServerType_DB := "DB"
+	strServerType_DT := "DT"
 	if len(os.Args) > 1 {
 		strport = os.Args[1]
 		strServerType = os.Args[2]
@@ -52,6 +53,10 @@ func main() {
 			glog.Error("网络错误", err)
 			return
 		}
+	} else if strServerType == strServerType_DT {
+		strport = "8891" //  登录服务器 -- 大厅服务器
+		http.HandleFunc("/GolangLtdDT", IndexHandler)
+		http.ListenAndServe(":"+strport, nil)
 	}
 	panic("【服务器类型】不存在")
 }

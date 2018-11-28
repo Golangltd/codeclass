@@ -9,4 +9,5 @@ const (
 	G_Error_Proto    //  G_Error_Proto == 4     游戏的错误处理
 	G_Snake_Proto    //  G_Snake_Proto == 5     贪吃蛇游戏
 	G_GateWay_Proto  //  G_GateWay_Proto == 6     网关协议
+	G_GameHall_Proto //  G_GameHall_Proto == 7     大厅协议
 )
