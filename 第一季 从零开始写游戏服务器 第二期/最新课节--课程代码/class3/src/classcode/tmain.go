@@ -25,6 +25,7 @@ func main() {
 	strServerType_GS := "GS"
 	strServerType_DB := "DB"
 	strServerType_DT := "DT"
+	strServerType_GM := "GM"
 	if len(os.Args) > 1 {
 		strport = os.Args[1]
 		strServerType = os.Args[2]
@@ -56,6 +57,10 @@ func main() {
 	} else if strServerType == strServerType_DT {
 		strport = "8891" //  登录服务器 -- 大厅服务器
 		http.HandleFunc("/GolangLtdDT", IndexHandler)
+		http.ListenAndServe(":"+strport, nil)
+	} else if strServerType == strServerType_GM {
+		strport = "8892" //  GM 系统操作 -- 修改金币等操作
+		http.HandleFunc("/GolangLtdGM", IndexHandlerGM)
 		http.ListenAndServe(":"+strport, nil)
 	}
 	panic("【服务器类型】不存在")
