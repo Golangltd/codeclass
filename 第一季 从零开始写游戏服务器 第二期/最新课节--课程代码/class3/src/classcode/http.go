@@ -8,7 +8,7 @@ import (
 )
 
 func wwwGolangLtd(ws *websocket.Conn) {
-	fmt.Println("Golang语言社区 欢迎您！", ws)
+	// fmt.Println("Golang语言社区 欢迎您！", ws)
 	// data = json{}
 	data := ws.Request().URL.Query().Get("data")
 	fmt.Println("data:", data)
