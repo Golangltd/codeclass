@@ -1,8 +1,8 @@
 package main
 
 import (
-	"classcode/Protocol"
-	"classcode/Protocol/Proto2"
+	"Proto"
+	"Proto/Proto2"
 	"glog-master"
 	"os"
 	"strings"
