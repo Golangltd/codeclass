@@ -42,7 +42,7 @@ var _ = Describe("Commands", func() {
 			Expect(stats.Misses).To(Equal(uint32(1)))
 			Expect(stats.Timeouts).To(Equal(uint32(0)))
 			Expect(stats.TotalConns).To(Equal(uint32(1)))
-			Expect(stats.FreeConns).To(Equal(uint32(1)))
+			Expect(stats.IdleConns).To(Equal(uint32(1)))
 		})
 
 		It("should Echo", func() {
@@ -69,7 +69,7 @@ var _ = Describe("Commands", func() {
 			val, err := client.Wait(1, wait).Result()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(val).To(Equal(int64(0)))
-			Expect(time.Now()).To(BeTemporally("~", start.Add(wait), time.Second))
+			Expect(time.Now()).To(BeTemporally("~", start.Add(wait), 3*time.Second))
 		})
 
 		It("should Select", func() {
@@ -113,6 +113,12 @@ var _ = Describe("Commands", func() {
 			r := client.ClientKill("1.1.1.1:1111")
 			Expect(r.Err()).To(MatchError("ERR No such client"))
 			Expect(r.Val()).To(Equal(""))
+		})
+
+		It("should ClientKillByFilter", func() {
+			r := client.ClientKillByFilter("TYPE", "test")
+			Expect(r.Err()).To(MatchError("ERR Unknown client type 'test'"))
+			Expect(r.Val()).To(Equal(int64(0)))
 		})
 
 		It("should ClientPause", func() {
@@ -219,7 +225,7 @@ var _ = Describe("Commands", func() {
 		It("Should Command", func() {
 			cmds, err := client.Command().Result()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(len(cmds)).To(BeNumerically("~", 185, 10))
+			Expect(len(cmds)).To(BeNumerically("~", 200, 20))
 
 			cmd := cmds["mget"]
 			Expect(cmd.Name).To(Equal("mget"))
@@ -244,14 +250,31 @@ var _ = Describe("Commands", func() {
 	Describe("debugging", func() {
 
 		It("should DebugObject", func() {
-			debug := client.DebugObject("foo")
-			Expect(debug.Err()).To(HaveOccurred())
-			Expect(debug.Err().Error()).To(Equal("ERR no such key"))
+			err := client.DebugObject("foo").Err()
+			Expect(err).To(MatchError("ERR no such key"))
 
-			client.Set("foo", "bar", 0)
-			debug = client.DebugObject("foo")
-			Expect(debug.Err()).NotTo(HaveOccurred())
-			Expect(debug.Val()).To(ContainSubstring(`serializedlength:4`))
+			err = client.Set("foo", "bar", 0).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			s, err := client.DebugObject("foo").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(s).To(ContainSubstring("serializedlength:4"))
+		})
+
+		It("should MemoryUsage", func() {
+			err := client.MemoryUsage("foo").Err()
+			Expect(err).To(Equal(redis.Nil))
+
+			err = client.Set("foo", "bar", 0).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			n, err := client.MemoryUsage("foo").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(52)))
+
+			n, err = client.MemoryUsage("foo", 0).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(52)))
 		})
 
 	})
@@ -1935,7 +1958,7 @@ var _ = Describe("Commands", func() {
 
 			sMembersMap := client.SMembersMap("set")
 			Expect(sMembersMap.Err()).NotTo(HaveOccurred())
-			Expect(sMembersMap.Val()).To(Equal(map[string]struct{}{"Hello": struct{}{}, "World": struct{}{}}))
+			Expect(sMembersMap.Val()).To(Equal(map[string]struct{}{"Hello": {}, "World": {}}))
 		})
 
 		It("should SMove", func() {
@@ -2094,6 +2117,170 @@ var _ = Describe("Commands", func() {
 	})
 
 	Describe("sorted sets", func() {
+
+		It("should BZPopMax", func() {
+			err := client.ZAdd("zset1", redis.Z{
+				Score:  1,
+				Member: "one",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset1", redis.Z{
+				Score:  2,
+				Member: "two",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset1", redis.Z{
+				Score:  3,
+				Member: "three",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			member, err := client.BZPopMax(0, "zset1", "zset2").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(member).To(Equal(redis.ZWithKey{
+				Z: redis.Z{
+					Score:  3,
+					Member: "three",
+				},
+				Key: "zset1",
+			}))
+		})
+
+		It("should BZPopMax blocks", func() {
+			started := make(chan bool)
+			done := make(chan bool)
+			go func() {
+				defer GinkgoRecover()
+
+				started <- true
+				bZPopMax := client.BZPopMax(0, "zset")
+				Expect(bZPopMax.Err()).NotTo(HaveOccurred())
+				Expect(bZPopMax.Val()).To(Equal(redis.ZWithKey{
+					Z: redis.Z{
+						Member: "a",
+						Score:  1,
+					},
+					Key: "zset",
+				}))
+				done <- true
+			}()
+			<-started
+
+			select {
+			case <-done:
+				Fail("BZPopMax is not blocked")
+			case <-time.After(time.Second):
+				// ok
+			}
+
+			zAdd := client.ZAdd("zset", redis.Z{
+				Member: "a",
+				Score:  1,
+			})
+			Expect(zAdd.Err()).NotTo(HaveOccurred())
+
+			select {
+			case <-done:
+				// ok
+			case <-time.After(time.Second):
+				Fail("BZPopMax is still blocked")
+			}
+		})
+
+		It("should BZPopMax timeout", func() {
+			val, err := client.BZPopMax(time.Second, "zset1").Result()
+			Expect(err).To(Equal(redis.Nil))
+			Expect(val).To(Equal(redis.ZWithKey{}))
+
+			Expect(client.Ping().Err()).NotTo(HaveOccurred())
+
+			stats := client.PoolStats()
+			Expect(stats.Hits).To(Equal(uint32(1)))
+			Expect(stats.Misses).To(Equal(uint32(2)))
+			Expect(stats.Timeouts).To(Equal(uint32(0)))
+		})
+
+		It("should BZPopMin", func() {
+			err := client.ZAdd("zset1", redis.Z{
+				Score:  1,
+				Member: "one",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset1", redis.Z{
+				Score:  2,
+				Member: "two",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset1", redis.Z{
+				Score:  3,
+				Member: "three",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			member, err := client.BZPopMin(0, "zset1", "zset2").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(member).To(Equal(redis.ZWithKey{
+				Z: redis.Z{
+					Score:  1,
+					Member: "one",
+				},
+				Key: "zset1",
+			}))
+		})
+
+		It("should BZPopMin blocks", func() {
+			started := make(chan bool)
+			done := make(chan bool)
+			go func() {
+				defer GinkgoRecover()
+
+				started <- true
+				bZPopMin := client.BZPopMin(0, "zset")
+				Expect(bZPopMin.Err()).NotTo(HaveOccurred())
+				Expect(bZPopMin.Val()).To(Equal(redis.ZWithKey{
+					Z: redis.Z{
+						Member: "a",
+						Score:  1,
+					},
+					Key: "zset",
+				}))
+				done <- true
+			}()
+			<-started
+
+			select {
+			case <-done:
+				Fail("BZPopMin is not blocked")
+			case <-time.After(time.Second):
+				// ok
+			}
+
+			zAdd := client.ZAdd("zset", redis.Z{
+				Member: "a",
+				Score:  1,
+			})
+			Expect(zAdd.Err()).NotTo(HaveOccurred())
+
+			select {
+			case <-done:
+				// ok
+			case <-time.After(time.Second):
+				Fail("BZPopMin is still blocked")
+			}
+		})
+
+		It("should BZPopMin timeout", func() {
+			val, err := client.BZPopMin(time.Second, "zset1").Result()
+			Expect(err).To(Equal(redis.Nil))
+			Expect(val).To(Equal(redis.ZWithKey{}))
+
+			Expect(client.Ping().Err()).NotTo(HaveOccurred())
+
+			stats := client.PoolStats()
+			Expect(stats.Hits).To(Equal(uint32(1)))
+			Expect(stats.Misses).To(Equal(uint32(2)))
+			Expect(stats.Timeouts).To(Equal(uint32(0)))
+		})
 
 		It("should ZAdd", func() {
 			added, err := client.ZAdd("zset", redis.Z{
@@ -2492,6 +2679,138 @@ var _ = Describe("Commands", func() {
 			}, {
 				Score:  10,
 				Member: "two",
+			}}))
+		})
+
+		It("should ZPopMax", func() {
+			err := client.ZAdd("zset", redis.Z{
+				Score:  1,
+				Member: "one",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset", redis.Z{
+				Score:  2,
+				Member: "two",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset", redis.Z{
+				Score:  3,
+				Member: "three",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			members, err := client.ZPopMax("zset").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(members).To(Equal([]redis.Z{{
+				Score:  3,
+				Member: "three",
+			}}))
+
+			// adding back 3
+			err = client.ZAdd("zset", redis.Z{
+				Score:  3,
+				Member: "three",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			members, err = client.ZPopMax("zset", 2).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(members).To(Equal([]redis.Z{{
+				Score:  3,
+				Member: "three",
+			}, {
+				Score:  2,
+				Member: "two",
+			}}))
+
+			// adding back 2 & 3
+			err = client.ZAdd("zset", redis.Z{
+				Score:  3,
+				Member: "three",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset", redis.Z{
+				Score:  2,
+				Member: "two",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			members, err = client.ZPopMax("zset", 10).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(members).To(Equal([]redis.Z{{
+				Score:  3,
+				Member: "three",
+			}, {
+				Score:  2,
+				Member: "two",
+			}, {
+				Score:  1,
+				Member: "one",
+			}}))
+		})
+
+		It("should ZPopMin", func() {
+			err := client.ZAdd("zset", redis.Z{
+				Score:  1,
+				Member: "one",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset", redis.Z{
+				Score:  2,
+				Member: "two",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			err = client.ZAdd("zset", redis.Z{
+				Score:  3,
+				Member: "three",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			members, err := client.ZPopMin("zset").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(members).To(Equal([]redis.Z{{
+				Score:  1,
+				Member: "one",
+			}}))
+
+			// adding back 1
+			err = client.ZAdd("zset", redis.Z{
+				Score:  1,
+				Member: "one",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+			members, err = client.ZPopMin("zset", 2).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(members).To(Equal([]redis.Z{{
+				Score:  1,
+				Member: "one",
+			}, {
+				Score:  2,
+				Member: "two",
+			}}))
+
+			// adding back 1 & 2
+			err = client.ZAdd("zset", redis.Z{
+				Score:  1,
+				Member: "one",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			err = client.ZAdd("zset", redis.Z{
+				Score:  2,
+				Member: "two",
+			}).Err()
+			Expect(err).NotTo(HaveOccurred())
+
+			members, err = client.ZPopMin("zset", 10).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(members).To(Equal([]redis.Z{{
+				Score:  1,
+				Member: "one",
+			}, {
+				Score:  2,
+				Member: "two",
+			}, {
+				Score:  3,
+				Member: "three",
 			}}))
 		})
 
@@ -3018,15 +3337,311 @@ var _ = Describe("Commands", func() {
 
 	})
 
+	Describe("streams", func() {
+		BeforeEach(func() {
+			id, err := client.XAdd(&redis.XAddArgs{
+				Stream: "stream",
+				ID:     "1-0",
+				Values: map[string]interface{}{"uno": "un"},
+			}).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(id).To(Equal("1-0"))
+
+			id, err = client.XAdd(&redis.XAddArgs{
+				Stream: "stream",
+				ID:     "2-0",
+				Values: map[string]interface{}{"dos": "deux"},
+			}).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(id).To(Equal("2-0"))
+
+			id, err = client.XAdd(&redis.XAddArgs{
+				Stream: "stream",
+				ID:     "3-0",
+				Values: map[string]interface{}{"tres": "troix"},
+			}).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(id).To(Equal("3-0"))
+		})
+
+		It("should XTrim", func() {
+			n, err := client.XTrim("stream", 0).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(3)))
+		})
+
+		It("should XTrimApprox", func() {
+			n, err := client.XTrimApprox("stream", 0).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(3)))
+		})
+
+		It("should XAdd", func() {
+			id, err := client.XAdd(&redis.XAddArgs{
+				Stream: "stream",
+				Values: map[string]interface{}{"quatro": "quatre"},
+			}).Result()
+			Expect(err).NotTo(HaveOccurred())
+
+			vals, err := client.XRange("stream", "-", "+").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(vals).To(Equal([]redis.XMessage{
+				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+				{ID: id, Values: map[string]interface{}{"quatro": "quatre"}},
+			}))
+		})
+
+		It("should XAdd with MaxLen", func() {
+			id, err := client.XAdd(&redis.XAddArgs{
+				Stream: "stream",
+				MaxLen: 1,
+				Values: map[string]interface{}{"quatro": "quatre"},
+			}).Result()
+			Expect(err).NotTo(HaveOccurred())
+
+			vals, err := client.XRange("stream", "-", "+").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(vals).To(Equal([]redis.XMessage{
+				{ID: id, Values: map[string]interface{}{"quatro": "quatre"}},
+			}))
+		})
+
+		It("should XDel", func() {
+			n, err := client.XDel("stream", "1-0", "2-0", "3-0").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(3)))
+		})
+
+		It("should XLen", func() {
+			n, err := client.XLen("stream").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(3)))
+		})
+
+		It("should XRange", func() {
+			msgs, err := client.XRange("stream", "-", "+").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+			}))
+
+			msgs, err = client.XRange("stream", "2", "+").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+			}))
+
+			msgs, err = client.XRange("stream", "-", "2").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+			}))
+		})
+
+		It("should XRangeN", func() {
+			msgs, err := client.XRangeN("stream", "-", "+", 2).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+			}))
+
+			msgs, err = client.XRangeN("stream", "2", "+", 1).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+			}))
+
+			msgs, err = client.XRangeN("stream", "-", "2", 1).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+			}))
+		})
+
+		It("should XRevRange", func() {
+			msgs, err := client.XRevRange("stream", "+", "-").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+			}))
+
+			msgs, err = client.XRevRange("stream", "+", "2").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+			}))
+		})
+
+		It("should XRevRangeN", func() {
+			msgs, err := client.XRevRangeN("stream", "+", "-", 2).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+			}))
+
+			msgs, err = client.XRevRangeN("stream", "+", "2", 1).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(msgs).To(Equal([]redis.XMessage{
+				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+			}))
+		})
+
+		It("should XRead", func() {
+			res, err := client.XReadStreams("stream", "0").Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res).To(Equal([]redis.XStream{{
+				Stream: "stream",
+				Messages: []redis.XMessage{
+					{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+					{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+					{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+				}},
+			}))
+
+			_, err = client.XReadStreams("stream", "3").Result()
+			Expect(err).To(Equal(redis.Nil))
+		})
+
+		It("should XRead", func() {
+			res, err := client.XRead(&redis.XReadArgs{
+				Streams: []string{"stream", "0"},
+				Count:   2,
+				Block:   100 * time.Millisecond,
+			}).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(res).To(Equal([]redis.XStream{{
+				Stream: "stream",
+				Messages: []redis.XMessage{
+					{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+					{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+				}},
+			}))
+
+			_, err = client.XRead(&redis.XReadArgs{
+				Streams: []string{"stream", "3"},
+				Count:   1,
+				Block:   100 * time.Millisecond,
+			}).Result()
+			Expect(err).To(Equal(redis.Nil))
+		})
+
+		Describe("group", func() {
+			BeforeEach(func() {
+				err := client.XGroupCreate("stream", "group", "0").Err()
+				Expect(err).NotTo(HaveOccurred())
+
+				res, err := client.XReadGroup(&redis.XReadGroupArgs{
+					Group:    "group",
+					Consumer: "consumer",
+					Streams:  []string{"stream", ">"},
+				}).Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(res).To(Equal([]redis.XStream{{
+					Stream: "stream",
+					Messages: []redis.XMessage{
+						{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
+						{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
+						{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
+					}},
+				}))
+			})
+
+			AfterEach(func() {
+				n, err := client.XGroupDestroy("stream", "group").Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(n).To(Equal(int64(1)))
+			})
+
+			It("should XPending", func() {
+				info, err := client.XPending("stream", "group").Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(info).To(Equal(&redis.XPending{
+					Count:     3,
+					Lower:     "1-0",
+					Higher:    "3-0",
+					Consumers: map[string]int64{"consumer": 3},
+				}))
+
+				infoExt, err := client.XPendingExt(&redis.XPendingExtArgs{
+					Stream:   "stream",
+					Group:    "group",
+					Start:    "-",
+					End:      "+",
+					Count:    10,
+					Consumer: "consumer",
+				}).Result()
+				Expect(err).NotTo(HaveOccurred())
+				for i := range infoExt {
+					infoExt[i].Idle = 0
+				}
+				Expect(infoExt).To(Equal([]redis.XPendingExt{
+					{Id: "1-0", Consumer: "consumer", Idle: 0, RetryCount: 1},
+					{Id: "2-0", Consumer: "consumer", Idle: 0, RetryCount: 1},
+					{Id: "3-0", Consumer: "consumer", Idle: 0, RetryCount: 1},
+				}))
+
+				n, err := client.XGroupDelConsumer("stream", "group", "consumer").Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(n).To(Equal(int64(3)))
+			})
+
+			It("should XClaim", func() {
+				msgs, err := client.XClaim(&redis.XClaimArgs{
+					Stream:   "stream",
+					Group:    "group",
+					Consumer: "consumer",
+					Messages: []string{"1-0", "2-0", "3-0"},
+				}).Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(msgs).To(Equal([]redis.XMessage{{
+					ID:     "1-0",
+					Values: map[string]interface{}{"uno": "un"},
+				}, {
+					ID:     "2-0",
+					Values: map[string]interface{}{"dos": "deux"},
+				}, {
+					ID:     "3-0",
+					Values: map[string]interface{}{"tres": "troix"},
+				}}))
+
+				ids, err := client.XClaimJustID(&redis.XClaimArgs{
+					Stream:   "stream",
+					Group:    "group",
+					Consumer: "consumer",
+					Messages: []string{"1-0", "2-0", "3-0"},
+				}).Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(ids).To(Equal([]string{"1-0", "2-0", "3-0"}))
+			})
+
+			It("should XAck", func() {
+				n, err := client.XAck("stream", "group", "1-0", "2-0", "4-0").Result()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(n).To(Equal(int64(2)))
+			})
+		})
+	})
+
 	Describe("Geo add and radius search", func() {
 		BeforeEach(func() {
-			geoAdd := client.GeoAdd(
+			n, err := client.GeoAdd(
 				"Sicily",
 				&redis.GeoLocation{Longitude: 13.361389, Latitude: 38.115556, Name: "Palermo"},
 				&redis.GeoLocation{Longitude: 15.087269, Latitude: 37.502669, Name: "Catania"},
-			)
-			Expect(geoAdd.Err()).NotTo(HaveOccurred())
-			Expect(geoAdd.Val()).To(Equal(int64(2)))
+			).Result()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(n).To(Equal(int64(2)))
 		})
 
 		It("should not add same geo location", func() {

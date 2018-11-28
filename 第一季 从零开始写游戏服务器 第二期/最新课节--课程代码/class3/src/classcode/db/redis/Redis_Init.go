@@ -1,8 +1,69 @@
 package Redis_DB
 
-// redis 连接池的使用
-// redis 链接初始化操作
-func init() {
+import (
+	"fmt"
+	"time"
+
+	"github.com/go-redis/redis"
+)
+
+//  数据操作
+var client *redis.Client
+
+func INIT() {
+	// 链接
+	client = redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	// 心跳  -- 一直做的事情
+	go Redis_Ping(client)
 
 	return
+
+	// 设置  --  测试时间 耗时 --
+	t1 := time.Now()
+	for i := 0; i < 100000; i++ {
+		err := client.Set("key", i+1, 0).Err()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	elapsed := time.Since(t1)
+	fmt.Println("redis ========= Time(s) :", elapsed)
+
+	// 获取
+	val, err := client.Get("key").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("key", val)
+
+	val2, err := client.Get("key2").Result()
+	if err == redis.Nil {
+		fmt.Println("key2 does not exists")
+	} else if err != nil {
+		panic(err)
+	} else {
+		fmt.Println("key2", val2)
+	}
+
+	return
+}
+
+// 数据ping数据，保证书的可用性
+func Redis_Ping(client *redis.Client) {
+	r_timer := time.Tick(time.Second * 5)
+	for {
+		select {
+		case <-r_timer.C:
+			pong, err := client.Ping().Result()
+			if err != nil {
+				fmt.Println(err)
+			}
+			_ = pong
+		}
+	}
 }

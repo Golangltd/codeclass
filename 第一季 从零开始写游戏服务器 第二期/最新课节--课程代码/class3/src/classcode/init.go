@@ -1,6 +1,7 @@
 package main
 
 import (
+	"classcode/db/redis"
 	"encoding/base64"
 	"flag"
 	"fmt"
@@ -29,8 +30,10 @@ func init() {
 	G_Net_Count = make(map[string]int)
 	// 并发安全的初始化
 	M = concurrent.NewConcurrentMap()
-	//go G_timer()
-	//go G_timeout_kick_Player()
+	// go G_timer()
+	// go G_timeout_kick_Player()
+	// redis 测试
+	// go Redis_DB.INIT()
 	return
 }
 
