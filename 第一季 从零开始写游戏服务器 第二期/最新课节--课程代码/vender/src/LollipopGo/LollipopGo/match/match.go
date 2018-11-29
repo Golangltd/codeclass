@@ -17,6 +17,19 @@ import (
 // 1 需要一个玩家报名后进来的，存储数据的结构信息
 // 2 匹配玩家，要求按照报名的时间的最长的开始匹配
 // 3 生产结果；匹配模块需要处理的
+// 4 实现方式：有一个匹配池子，每一个用户都是去池子里面匹配，成功返回结构
+// 5 匹配的池子包含很多因素：等级相近，金币相近等
+
+type MatchMoudle interface {
+	GetMatchResult()
+}
+
+var SubPlayer []int
+
+type MatchPlayer struct { // 匹配的数据
+}
+
+//-------------------------------------------------------------
 
 type MatchMoudle interface {
 	Init(selfGetter DModuleGetter) bool
