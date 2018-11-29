@@ -91,7 +91,6 @@ func initNet() bool {
 // 处理数据的返回
 func GameServerReceive(ws *websocket.Conn) {
 	for {
-		fmt.Println("0900")
 		var content string
 		err := websocket.Message.Receive(ws, &content)
 		if err != nil {

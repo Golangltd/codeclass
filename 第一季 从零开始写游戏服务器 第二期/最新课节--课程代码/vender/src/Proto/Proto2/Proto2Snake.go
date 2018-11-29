@@ -7,7 +7,31 @@ const (
 
 	C2S_PlayerEntryGameProto2 // C2S_PlayerEntryGameProto2 == 3 进入游戏
 	S2S_PlayerEntryGameProto2 // S2S_PlayerEntryGameProto2 == 4
+
+	C2S_PlayerMoveProto2 // C2S_PlayerMoveProto2 == 5 移动操作
+	S2S_PlayerMoveProto2 // S2S_PlayerMoveProto2 == 6
+
+	S2S_PlayerMoveProto2 // S2S_PlayerMoveProto2 == 7  玩家死亡操作
 )
+
+//------------------------------------------------------------------------------
+
+// 移动操作
+type C2S_PlayerMove struct {
+	Protocol  int
+	Protocol2 int
+	OpenID    string // 玩家的唯一的标识
+	RoomID    int    // 房间ID
+	OP_ULRDP  string // 玩家操作的方式：移动的方向
+}
+
+//  服务器广播给用户操作--同一个房间的，其他房间不广播
+type S2S_PlayerMove struct {
+	Protocol  int
+	Protocol2 int
+	OpenID    string // 玩家的唯一的标识
+	OP_ULRDP  string // 玩家操作的方式：移动的方向
+}
 
 //------------------------------------------------------------------------------
 
