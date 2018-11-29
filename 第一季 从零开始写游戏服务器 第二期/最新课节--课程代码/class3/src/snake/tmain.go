@@ -64,10 +64,9 @@ func init() {
 	// 初始化网络信息
 	if initNet() {
 		// 匹配 对战操作
-		initMatch(connbak)
-		if initbak() {
+		// initMatch(connbak)
+		initbak()
 
-		}
 		return
 	}
 	panic("链接服务器失败！！！")
@@ -76,7 +75,7 @@ func init() {
 
 func initNet() bool {
 
-	fmt.Println("Robot 客户端模拟！")
+	fmt.Println(" 用户客户端客户端模拟！")
 	url := "ws://" + *addr + "/GolangLtdSnake"
 	connbak, err := websocket.Dial(url, "", "test://golang/")
 	if err != nil {
@@ -85,13 +84,14 @@ func initNet() bool {
 	}
 	// 协程支持  --接受线程操作
 	go GameServerReceive(connbak)
-
+	initMatch(connbak)
 	return true
 }
 
 // 处理数据的返回
 func GameServerReceive(ws *websocket.Conn) {
 	for {
+		fmt.Println("0900")
 		var content string
 		err := websocket.Message.Receive(ws, &content)
 		if err != nil {

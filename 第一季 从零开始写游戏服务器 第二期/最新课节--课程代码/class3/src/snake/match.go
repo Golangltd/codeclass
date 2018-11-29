@@ -16,19 +16,18 @@ import (
 // 匹配服务器
 // 发消息给服务器
 // 否则就一直等待匹配
-func initMatch(conn *websocket.Conn) bool {
-	if conn != nil {
-		// 1 组装  进入的协议
-		data := &Proto2.C2S_PlayerEntryGame{
-			Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
-			Protocol2: Proto2.C2S_PlayerEntryGameProto2,
-			Code:      util.CreateTime(), // 随机生产的数据，时间戳
-		}
-		// 2 发送数据到服务器
-		PlayerSendToServer(conn, data)
-		return true
+func initMatch(conn *websocket.Conn) {
+
+	// 1 组装  进入的协议
+	data := &Proto2.C2S_PlayerEntryGame{
+		Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
+		Protocol2: Proto2.C2S_PlayerEntryGameProto2,
+		Code:      util.CreateTime(), // 随机生产的数据，时间戳
 	}
-	return false
+	// fmt.Println(data)
+	// 2 发送数据到服务器
+	PlayerSendToServer(conn, data)
+
 }
 
 // 公用的send函数

@@ -97,7 +97,7 @@ func (this *NetDataConn) HandleCltProtocol(protocol interface{}, protocol2 inter
 
 	// 分发处理  --- 首先判断主协议存在，再判断子协议存在不
 
-	//glog.Info(protocol)
+	glog.Info(protocol)
 	//glog.Info(Proto.GameData_Proto)
 
 	//类型
@@ -126,6 +126,7 @@ func (this *NetDataConn) HandleCltProtocol(protocol interface{}, protocol2 inter
 		}
 	case float64(Proto.G_Snake_Proto):
 		{ // 贪吃蛇的主协议
+			fmt.Println("贪吃蛇的主协议!!!")
 			this.HandleCltProtocol2Snake(protocol2, ProtocolData)
 
 		}
@@ -215,7 +216,6 @@ func (this *NetDataConn) PlayerLogin(ProtocolData map[string]interface{}) {
 	//	glog.Info(this.MapSafe)
 	glog.Info("-------------------------------")
 
-	// G_PlayerData["123456"] = playerdata
 	glog.Info(G_PlayerData["123456"])
 	// 服务器-->客户端
 	data := &Proto2.S2C_PlayerLogin{

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"Proto"
+	_ "Proto"
 	"Proto/Proto2"
+	"fmt"
 )
 
 // 子协议的处理
@@ -11,6 +12,7 @@ func (this *NetDataConn) HandleCltProtocol2Snake(protocol2 interface{}, Protocol
 	switch protocol2 {
 	case float64(Proto2.C2S_PlayerEntryGameProto2):
 		{
+			fmt.Println("贪吃蛇:玩家进入游戏的协议!!!")
 			// 玩家进入游戏的协议
 			this.EntryGameSnake(ProtocolData)
 		}
@@ -30,6 +32,7 @@ func (this *NetDataConn) HandleCltProtocol2Snake(protocol2 interface{}, Protocol
 // 玩家 进入游戏的协议
 func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 	// 进入游戏 进行匹配
+	fmt.Println("玩家进行匹配!!!")
 	return
 }
 
