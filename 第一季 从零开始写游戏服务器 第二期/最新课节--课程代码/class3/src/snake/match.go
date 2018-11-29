@@ -18,10 +18,10 @@ import (
 // 否则就一直等待匹配
 func initMatch(conn *websocket.Conn) bool {
 	if conn != nil {
-		// 1 组装
-		data := &Proto2.C2S_PlayerLogin{
-			Protocol:  Proto.GameData_Proto,
-			Protocol2: Proto2.C2S_PlayerLoginProto2,
+		// 1 组装  进入的协议
+		data := &Proto2.C2S_PlayerEntryGame{
+			Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
+			Protocol2: Proto2.C2S_PlayerEntryGameProto2,
 			Code:      util.CreateTime(), // 随机生产的数据，时间戳
 		}
 		// 2 发送数据到服务器

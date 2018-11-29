@@ -124,6 +124,11 @@ func (this *NetDataConn) HandleCltProtocol(protocol interface{}, protocol2 inter
 		{
 			this.HandleCltProtocol2Net(protocol2, ProtocolData)
 		}
+	case float64(Proto.G_Snake_Proto):
+		{ // 贪吃蛇的主协议
+			this.HandleCltProtocol2Snake(protocol2, ProtocolData)
+
+		}
 	default:
 		panic("主协议：不存在！！！")
 	}

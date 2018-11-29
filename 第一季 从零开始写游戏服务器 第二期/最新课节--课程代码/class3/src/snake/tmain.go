@@ -49,7 +49,7 @@ import (
 	"code.google.com/p/go.net/websocket"
 )
 
-var addr = flag.String("addr", "127.0.0.1:8888", "http service address")
+var addr = flag.String("addr", "127.0.0.1:8893", "http service address")
 var connbak *websocket.Conn
 var bkaiguan chan bool
 
@@ -77,7 +77,7 @@ func init() {
 func initNet() bool {
 
 	fmt.Println("Robot 客户端模拟！")
-	url := "ws://" + *addr + "/GolangLtd"
+	url := "ws://" + *addr + "/GolangLtdSnake"
 	connbak, err := websocket.Dial(url, "", "test://golang/")
 	if err != nil {
 		fmt.Println("err:", err.Error())
