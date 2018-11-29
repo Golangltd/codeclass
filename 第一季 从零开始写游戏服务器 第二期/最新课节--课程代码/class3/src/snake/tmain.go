@@ -43,6 +43,7 @@ import (
 	_ "glog-master"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"code.google.com/p/go.net/websocket"
@@ -50,6 +51,7 @@ import (
 
 var addr = flag.String("addr", "127.0.0.1:8888", "http service address")
 var connbak *websocket.Conn
+var bkaiguan chan bool
 
 // 初始化操作
 func init() {
@@ -58,9 +60,14 @@ func init() {
 	flag.Set("log_dir", "./log")        // 日志文件保存目录
 	flag.Set("v", "3")                  // 配置V输出的等级。
 	flag.Parse()
+	bkaiguan = make(chan bool) // 开关
 	// 初始化网络信息
 	if initNet() {
-		initbak()
+		// 匹配 对战操作
+		initMatch(connbak)
+		if initbak() {
+
+		}
 		return
 	}
 	panic("链接服务器失败！！！")
@@ -76,9 +83,33 @@ func initNet() bool {
 		fmt.Println("err:", err.Error())
 		return false
 	}
-	_ = connbak
+	// 协程支持  --接受线程操作
+	go GameServerReceive(connbak)
 
 	return true
+}
+
+// 处理数据的返回
+func GameServerReceive(ws *websocket.Conn) {
+	for {
+		var content string
+		err := websocket.Message.Receive(ws, &content)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		// decode
+		fmt.Println(strings.Trim("", "\""))
+		fmt.Println(content)
+		content = strings.Replace(content, "\"", "", -1)
+		contentstr, errr := base64Decode([]byte(content))
+		if errr != nil {
+			fmt.Println(errr)
+			continue
+		}
+		// 解析数据 --
+		fmt.Println("返回数据：", string(contentstr))
+	}
 }
 
 // 表示光标的位置
