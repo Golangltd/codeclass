@@ -112,3 +112,5 @@ func HandleCltProtocol2Snake(protocol2 interface{}, ProtocolData map[string]inte
 
 	return
 }
+
+func 
