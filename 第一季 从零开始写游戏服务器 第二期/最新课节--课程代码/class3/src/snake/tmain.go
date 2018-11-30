@@ -43,7 +43,6 @@ import (
 	_ "glog-master"
 	"math/rand"
 	"os"
-	"strings"
 	"time"
 
 	"code.google.com/p/go.net/websocket"
@@ -85,7 +84,8 @@ func initNet() bool {
 	// 协程支持  --接受线程操作
 	go GameServerReceive(connbak)
 	// 1 登录 协议
-	// 2 进入游戏
+	initLogin(connbak)
+	// 2 进入 游戏
 	initMatch(connbak)
 	return true
 }

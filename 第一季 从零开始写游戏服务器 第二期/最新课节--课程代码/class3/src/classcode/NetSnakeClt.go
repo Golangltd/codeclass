@@ -53,7 +53,7 @@ func (this *NetDataConn) LoginGameSnake(ProtocolData map[string]interface{}) {
 	// 2 获取玩家的信息 --> player data
 	// 3 保存到内存中的数据
 	data := &Proto2.S2S_PlayerLoginS{
-		Protocol:  Proto.GameNet_Proto,
+		Protocol:  Proto.G_Snake_Proto,
 		Protocol2: Proto2.S2S_PlayerLoginSProto2,
 		Token:     "123456789",
 	}

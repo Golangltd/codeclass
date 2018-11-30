@@ -13,23 +13,6 @@ import (
 	"code.google.com/p/go.net/websocket"
 )
 
-// 匹配服务器
-// 发消息给服务器
-// 否则就一直等待匹配
-func initMatch(conn *websocket.Conn) {
-
-	// 1 组装  进入的协议
-	data := &Proto2.C2S_PlayerEntryGame{
-		Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
-		Protocol2: Proto2.C2S_PlayerEntryGameProto2,
-		Code:      util.UTCTime_LollipopGO(), // 随机生产的数据，时间戳
-	}
-	// fmt.Println(data)
-	// 2 发送数据到服务器
-	PlayerSendToServer(conn, data)
-
-}
-
 // 公用的send函数
 func PlayerSendToServer(conn *websocket.Conn, data interface{}) bool {
 
@@ -51,4 +34,33 @@ func PlayerSendToServer(conn *websocket.Conn, data interface{}) bool {
 // 解码
 func base64Decode(src []byte) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(string(src))
+}
+
+// 匹配服务器
+func initMatch(conn *websocket.Conn) {
+
+	// 1 组装  进入的协议
+	data := &Proto2.C2S_PlayerEntryGame{
+		Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
+		Protocol2: Proto2.C2S_PlayerEntryGameProto2,
+		Code:      util.UTCTime_LollipopGO(), // 随机生产的数据，时间戳
+	}
+	// fmt.Println(data)
+	// 2 发送数据到服务器
+	PlayerSendToServer(conn, data)
+
+}
+
+// 登录服务器
+// 登陆的用户名及密码都是随机暂时
+func initLogin(conn *websocket.Conn) {
+	// 组装数据
+	data := &Proto2.C2S_PlayerLoginS{
+		Protocol:   Proto.G_Snake_Proto, // 游戏主要协议
+		Protocol2:  Proto2.C2S_PlayerLoginSProto2,
+		Login_Name: util.UTCTime_LollipopGO(),
+		Login_PW:   util.UTCTime_LollipopGO(),
+	}
+	// 发送数据
+	PlayerSendToServer(conn, data)
 }
