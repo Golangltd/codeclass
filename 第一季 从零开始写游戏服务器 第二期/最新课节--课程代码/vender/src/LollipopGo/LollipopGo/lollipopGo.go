@@ -1,11 +1,20 @@
 package LollipopGo
 
 import (
+	"LollipopGo/LollipopGo/conf" // 配置文件
 	"LollipopGo/LollipopGo/log"
 )
 
-// 运行程序
 func Run() {
-	//  日志数据 -- 操作
-	log.LollipopGoInfo("Golang语言社区  LeafLtd %v starting up" + version)
+	// logger
+	if conf.LogLevel != "" {
+		logger, err := log.New(conf.LogLevel, conf.LogPath, conf.LogFlag)
+		if err != nil {
+			panic(err)
+		}
+		log.Export(logger)
+		defer logger.Close()
+	}
+
+	log.Release("Golang语言社区  LeafLtd %v starting up", version)
 }

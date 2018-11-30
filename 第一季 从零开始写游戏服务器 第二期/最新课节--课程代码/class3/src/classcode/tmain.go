@@ -5,10 +5,21 @@ import (
 	"net/http"
 	"os"
 
+	LollipopGoconf "LollipopGo/LollipopGo/conf"
+	"classcode/conf" // 服务器配置——针对不同环境的配置
 	_ "net/http/pprof"
 
 	"code.google.com/p/go.net/websocket"
 )
+
+func init() {
+	// 加载配置
+	LollipopGoconf.LogLevel = conf.Server.LogLevel
+	LollipopGoconf.LogPath = conf.Server.LogPath
+	LollipopGoconf.LogFlag = conf.LogFlag
+	LollipopGoconf.ConsolePort = conf.Server.ConsolePort
+	LollipopGoconf.ProfilePath = conf.Server.ProfilePath
+}
 
 func main() {
 	// os.Args[0] == 执行文件的名字
