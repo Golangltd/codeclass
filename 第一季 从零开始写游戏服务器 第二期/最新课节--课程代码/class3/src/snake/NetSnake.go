@@ -21,6 +21,7 @@ func Send_PlayerLogin(conn *websocket.Conn, strName string, strPW string) {
 		Login_Name: strName,
 		Login_PW:   strPW,
 	}
+	// 发送数据
 	PlayerSendToServer(conn, data)
 }
 
@@ -37,4 +38,27 @@ func Send_XYZ_Data(conn *websocket.Conn, strOpenID string, strRoomID string, OP_
 	}
 	// 2 发送数据到服务器
 	PlayerSendToServer(conn, data)
+}
+
+// 处理数据的返回
+func GameServerReceive(ws *websocket.Conn) {
+	for {
+		var content string
+		err := websocket.Message.Receive(ws, &content)
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		// decode
+		fmt.Println(strings.Trim("", "\""))
+		fmt.Println(content)
+		content = strings.Replace(content, "\"", "", -1)
+		contentstr, errr := base64Decode([]byte(content))
+		if errr != nil {
+			fmt.Println(errr)
+			continue
+		}
+		// 解析数据 --
+		fmt.Println("返回数据：", string(contentstr))
+	}
 }
