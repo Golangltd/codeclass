@@ -1,7 +1,5 @@
 package conf
 
-// 配置文件定义
-// 数据定义操作
 var (
 	LenStackBuf = 4096
 
@@ -12,7 +10,7 @@ var (
 
 	// console
 	ConsolePort   int
-	ConsolePrompt string = "Leaf# "
+	ConsolePrompt string = "LollipopGo# "
 	ProfilePath   string
 
 	// cluster
