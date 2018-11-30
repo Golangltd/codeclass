@@ -7,9 +7,7 @@ import (
 	"reflect"
 )
 
-// 消息的管理
-
-// 反序列化操作
+// 反序列化操作  -- 数据操作  性能提升操作
 func (p *Processor) Unmarshal(data []byte) (interface{}, error) {
 	var m map[string]json.RawMessage
 	err := json.Unmarshal(data, &m)
