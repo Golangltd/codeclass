@@ -36,31 +36,21 @@ func (r *Requestbody) Json2map() (s map[string]interface{}, err error) {
 	return result, nil
 }
 
-// 结构体的方法 - 接受者是指针类型的
 func (this *NetDataConn) PullFromClient() {
-	//  网络层处理 数据
-	//  1 针对服务器而言 一直等待消息的
-	//  for (){}
 	for {
 
 		var content string
 		if err := websocket.Message.Receive(this.Connection, &content); err != nil {
 			break
 		}
-		if len(content) == 0 {
+		if len(content) == 0 || len(content) >= 4096 {
 			break
 		}
-		// go 并发编程使用
 		go this.SyncMeassgeFun(content)
 	}
-	return
 }
 
 func (this *NetDataConn) SyncMeassgeFun(content string) {
-	// 1 字符串---》 其他格式  必须高效 （大量并发情况下 依然不影响性能，游戏服务器 计算密集型的）
-	//	glog.Info(content)
-	// 2 已经通过第1步转化成我们所要的格式了，实现格式的处理函数：主协议、子协议、struct
-	// 3 处理函数实现
 	var r Requestbody
 	r.req = content
 
@@ -70,7 +60,6 @@ func (this *NetDataConn) SyncMeassgeFun(content string) {
 	} else {
 		glog.Error("解析失败：", err.Error())
 	}
-
 }
 
 func typeof(v interface{}) string {
