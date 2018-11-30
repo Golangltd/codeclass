@@ -16,5 +16,5 @@ func Run() {
 		defer logger.Close()
 	}
 
-	log.Release("Golang语言社区  LeafLtd %v starting up", version)
+	log.Release("Golang语言社区  LollipopGo %v starting up", version)
 }

@@ -63,14 +63,6 @@ func SyncMeassgeFun(content string) {
 	}
 }
 
-// //json str 转map
-//   var dat map[string]interface{}
-//   if err := json.Unmarshal([]byte(jsonStr), &dat); err == nil {
-//       fmt.Println("==============json str 转map=======================")
-//       fmt.Println(dat)
-//       fmt.Println(dat["host"])
-//   }
-
 // 字符串 解析成 json
 
 func HandleCltProtocol(protocol interface{}, protocol2 interface{}, ProtocolData map[string]interface{}) {
