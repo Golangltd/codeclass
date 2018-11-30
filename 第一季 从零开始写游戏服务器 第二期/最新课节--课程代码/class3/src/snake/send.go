@@ -1,7 +1,11 @@
-package send
+package main
 
 import (
-	"fmt"
+	"Proto"
+	"Proto/Proto2"
+	_ "fmt"
+
+	"code.google.com/p/go.net/websocket"
 )
 
 // 发送坐标数据 --==--
@@ -12,7 +16,7 @@ func Send_XYZ_Data(conn *websocket.Conn, strOpenID string, strRoomID string, OP_
 		Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
 		Protocol2: Proto2.C2S_PlayerMoveProto2,
 		OpenID:    strOpenID, // 随机生产的数据，时间戳
-		RoomID:    strRoomID,
+		RoomID:    1,
 		OP_ULRDP:  OP_ULRDP,
 	}
 	// 2 发送数据到服务器

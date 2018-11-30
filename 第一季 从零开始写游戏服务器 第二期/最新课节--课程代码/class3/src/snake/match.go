@@ -22,7 +22,7 @@ func initMatch(conn *websocket.Conn) {
 	data := &Proto2.C2S_PlayerEntryGame{
 		Protocol:  Proto.G_Snake_Proto, // 游戏主要协议
 		Protocol2: Proto2.C2S_PlayerEntryGameProto2,
-		Code:      util.CreateTime(), // 随机生产的数据，时间戳
+		Code:      util.UTCTime_LollipopGO(), // 随机生产的数据，时间戳
 	}
 	// fmt.Println(data)
 	// 2 发送数据到服务器
