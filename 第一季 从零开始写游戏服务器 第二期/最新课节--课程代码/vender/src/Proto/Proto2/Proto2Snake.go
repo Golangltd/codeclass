@@ -11,7 +11,7 @@ const (
 	C2S_PlayerMoveProto2 // C2S_PlayerMoveProto2 == 5 移动操作
 	S2S_PlayerMoveProto2 // S2S_PlayerMoveProto2 == 6
 
-	//S2S_PlayerMoveProto2 // S2S_PlayerMoveProto2 == 7  玩家死亡操作
+	// S2S_PlayerMoveProto2 // S2S_PlayerMoveProto2 == 7  玩家死亡操作
 
 )
 
