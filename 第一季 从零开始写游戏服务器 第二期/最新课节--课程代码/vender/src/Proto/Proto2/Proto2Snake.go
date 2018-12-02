@@ -1,5 +1,9 @@
 package Proto2
 
+import (
+	"LollipopGo/LollipopGo/player"
+)
+
 const (
 	ININSNAKE              = iota
 	C2S_PlayerLoginSProto2 // PlayerLoginSProto2 == 1 登陆协议
@@ -47,7 +51,8 @@ type C2S_PlayerEntryGame struct {
 type S2S_PlayerEntryGame struct {
 	Protocol  int
 	Protocol2 int
-	RoomID    int //房间ID
+	RoomID    int                      //房间ID
+	MapPlayer map[int]*player.PlayerSt // 玩家的结构信息
 }
 
 //------------------------------------------------------------------------------

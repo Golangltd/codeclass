@@ -64,7 +64,7 @@ func init() {
 	if initNet() {
 		// 匹配 对战操作
 		// initMatch(connbak)
-		initbak()
+		// initbak()  ----bak
 
 		return
 	}

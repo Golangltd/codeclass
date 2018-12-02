@@ -34,6 +34,17 @@ func (this *NetDataConn) HandleCltProtocol2Snake(protocol2 interface{}, Protocol
 func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 	// 进入游戏 进行匹配
 	fmt.Println("玩家进行匹配!!!")
+	// 1 匹配算法 --》匹配在线玩家的
+
+	// 2 返回数据
+	data := &Proto2.S2S_PlayerEntryGame{
+		Protocol:  Proto.G_Snake_Proto,
+		Protocol2: Proto2.S2S_PlayerEntryGameProto2,
+		RoomID:    1,
+		MapPlayer: nil,
+	}
+	// 发送数据给客户端了
+	this.PlayerSendMessage(data)
 	return
 }
 

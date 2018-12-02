@@ -103,7 +103,13 @@ func HandleCltProtocol2Snake(protocol2 interface{}, ProtocolData map[string]inte
 		{
 			fmt.Println("贪吃蛇:玩家进入游戏的协议!!!")
 			// 玩家进入游戏的协议
-			// this.EntryGameSnake(ProtocolData)
+			EntryGameSnake(ProtocolData)
+		}
+	case float64(Proto2.S2S_PlayerEntryGameProto2):
+		{
+			fmt.Println("贪吃蛇:玩家匹配成功协议!!!")
+			// 玩家进入游戏的协议
+			// EntryGameSnake(ProtocolData)
 		}
 
 	default:
@@ -113,4 +119,8 @@ func HandleCltProtocol2Snake(protocol2 interface{}, ProtocolData map[string]inte
 	return
 }
 
-func 
+func EntryGameSnake(ProtocolData map[string]interface{}) {
+	StrToken := ProtocolData["Token"].(string)
+	fmt.Println("贪吃蛇:玩家进入游戏的协议!!!", StrToken)
+	return
+}
