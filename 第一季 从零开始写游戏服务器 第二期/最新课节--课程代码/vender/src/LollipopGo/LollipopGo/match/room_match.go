@@ -14,8 +14,7 @@ type RoomMatch struct {
 	RoomPlayerMap map[string]*player.PlayerSt // 房间玩家的结构信息
 }
 
-// 新注册匹配
-func newMatch() (MapMatch map[string]*RoomMatch) {
+func newRoomMatch() (MapMatch map[string]*RoomMatch) {
 
-	return nil
+	return make(MapMatch map[string]*RoomMatch)
 }

@@ -10,7 +10,6 @@ package match
 达到最大匹配时间，则跳过等待下一秒的匹配；如果达到最大匹配时间，还是没匹配到足够的人，则给这个几个人
 凑机器人，提交匹配成功。
 
-
 */
 
 type MatchMoudle interface {
@@ -18,4 +17,5 @@ type MatchMoudle interface {
 	PutMatch([]byte)
 	GetMatchNum(string) int
 	TimerMatch()
+	DestroyMatch()
 }

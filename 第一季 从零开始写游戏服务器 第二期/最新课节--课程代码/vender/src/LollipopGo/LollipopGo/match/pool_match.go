@@ -23,20 +23,16 @@ func newPoolMatch(IMax int) (MapPoolMatch chan map[int]*PoolMatch) {
 
 func (this *PoolMatch) PutMatch(data map[int]*PoolMatch) {
 	if len(MapPoolMatch) >= PoolMax {
-		log.Debug("超过了pool的上限！")
+		log.Debug("超过了 pool的上限!")
 		return
 	}
 	MapPoolMatch <- data
 }
 
-func (this *PoolMatch) GetMatchResult() {
+func (this *PoolMatch) GetMatchResult() {}
 
-}
+func (this *PoolMatch) GetMatchNum() {}
 
-func (this *PoolMatch) GetMatchNum() {
+func (this *PoolMatch) TimerMatch() {}
 
-}
-
-func (this *PoolMatch) TimerMatch() {
-
-}
+func (this *PoolMatch) DestroyMatch() {}
