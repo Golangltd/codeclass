@@ -45,13 +45,15 @@ type C2S_PlayerEntryGame struct {
 	Protocol  int
 	Protocol2 int
 	Code      string //临时码
+	Icode     int
 }
 
 //  返回数据操作
 type S2S_PlayerEntryGame struct {
 	Protocol  int
 	Protocol2 int
-	RoomID    int                      //房间ID
+	RoomID    int //房间ID
+	Data      []int
 	MapPlayer map[int]*player.PlayerSt // 玩家的结构信息
 }
 

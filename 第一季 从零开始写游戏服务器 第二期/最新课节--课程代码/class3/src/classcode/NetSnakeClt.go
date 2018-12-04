@@ -37,25 +37,46 @@ func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 		panic("玩家进入游戏数据错误, 字段为空！")
 		return
 	}
-	StrLogin_Name := ProtocolData["Code"].(string)
+	//StrLogin_Name := ProtocolData["Code"].(string)
 	Icode := ProtocolData["Icode"].(float64)
 	// 进入游戏 进行匹配
 	fmt.Println("玩家进行匹配!!!")
 	// 1 匹配算法 --》匹配在线玩家的
 	// 2 保存数据 --> chnnel 环境操作
-	Chan_match <- Icode
+	Chan_match <- int(Icode)
 	// 3 返回数据
-
+	data1 := Match_Player()
 	// 4 发送数据 --> 返回数据操作
 	data := &Proto2.S2S_PlayerEntryGame{
 		Protocol:  Proto.G_Snake_Proto,
 		Protocol2: Proto2.S2S_PlayerEntryGameProto2,
 		RoomID:    1,
+		Data:      data1,
 		MapPlayer: nil, // 玩家的名字
 	}
 	// 发送数据给客户端了
 	this.PlayerSendMessage(data)
 	return
+}
+
+// 匹配玩家
+func Match_Player() []int {
+
+	for {
+		islice := make([]int, 2, 2)
+		if len(Chan_match) < 2 {
+			return nil
+		}
+		// 枚举数据
+		for data := range Chan_match {
+			islice = append(islice, data)
+			if len(islice) >= 2 {
+				return islice
+			}
+		}
+	}
+
+	return nil
 }
 
 // 登录游戏协议
