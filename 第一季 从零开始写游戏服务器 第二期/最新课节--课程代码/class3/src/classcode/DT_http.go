@@ -11,5 +11,6 @@ import (
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "hello world")
-	// 需要处理 get请求等
+	// 需要处理 get 请求等
+	// 1 base64 操作 ---
 }

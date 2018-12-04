@@ -20,6 +20,8 @@ var M *concurrent.ConcurrentMap // 并发安全的
 var addr = flag.String("addr", "127.0.0.1:8888", "http service address")
 var WS *websocket.Conn
 var icount, icounttmp int
+var Chan_match chan int
+var Chan_Number int = 100
 
 // 游戏服务器的初始化
 func init() {
@@ -28,6 +30,7 @@ func init() {
 	G_PlayerNet = make(map[string]int)
 	G_PlayerNetSys = make(map[string]int)
 	G_Net_Count = make(map[string]int)
+	Chan_match = make(chan int, Chan_Number)
 	// 并发安全的初始化
 	M = concurrent.NewConcurrentMap()
 	// go G_timer()

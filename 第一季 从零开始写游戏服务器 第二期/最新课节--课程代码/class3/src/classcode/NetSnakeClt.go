@@ -32,16 +32,26 @@ func (this *NetDataConn) HandleCltProtocol2Snake(protocol2 interface{}, Protocol
 
 // 玩家 进入游戏的协议
 func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
+	if ProtocolData["Code"] == nil ||
+		ProtocolData["Code"] == nil {
+		panic("玩家进入游戏数据错误, 字段为空！")
+		return
+	}
+	StrLogin_Name := ProtocolData["Code"].(string)
+	Icode := ProtocolData["Icode"].(float64)
 	// 进入游戏 进行匹配
 	fmt.Println("玩家进行匹配!!!")
 	// 1 匹配算法 --》匹配在线玩家的
+	// 2 保存数据 --> chnnel 环境操作
+	Chan_match <- Icode
+	// 3 返回数据
 
-	// 2 返回数据
+	// 4 发送数据 --> 返回数据操作
 	data := &Proto2.S2S_PlayerEntryGame{
 		Protocol:  Proto.G_Snake_Proto,
 		Protocol2: Proto2.S2S_PlayerEntryGameProto2,
 		RoomID:    1,
-		MapPlayer: nil,
+		MapPlayer: nil, // 玩家的名字
 	}
 	// 发送数据给客户端了
 	this.PlayerSendMessage(data)
