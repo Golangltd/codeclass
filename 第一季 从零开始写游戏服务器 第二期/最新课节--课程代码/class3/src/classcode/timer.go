@@ -133,7 +133,6 @@ func GS2GW_Timer(ws *websocket.Conn) {
 					continue
 				}
 				glog.Info("发送数据：", data)
-
 			}
 		}
 	}
