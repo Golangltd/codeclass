@@ -37,7 +37,7 @@ func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 		panic("玩家进入游戏数据错误, 字段为空！")
 		return
 	}
-	//StrLogin_Name := ProtocolData["Code"].(string)
+	strCode := ProtocolData["Code"].(string)
 	Icode := ProtocolData["Icode"].(float64)
 	// 进入游戏 进行匹配
 	fmt.Println("玩家进行匹配!!!")
@@ -46,6 +46,7 @@ func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 	Chan_match <- int(Icode)
 	// 3 返回数据
 	data1 := Match_Player()
+	_ = data1
 	// 4 发送数据 --> 返回数据操作
 	data := &Proto2.S2S_PlayerEntryGame{
 		Protocol:  Proto.G_Snake_Proto,
@@ -56,6 +57,10 @@ func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 	}
 	// 发送数据给客户端了
 	this.PlayerSendMessage(data)
+	// 保存同一个玩家的数据信息
+	if data.RoomID != 0 {
+		this.MapSafe.Put(strCode+"|"+util.MD5_LollipopGO(strRoom)+"|room", this)
+	}
 	return
 }
 
@@ -105,8 +110,8 @@ func (this *NetDataConn) LoginGameSnake(ProtocolData map[string]interface{}) {
 	// MD5信息操作
 	strRoom := "UID" // 玩家房间的ID信息：信息的组成主要是  游戏ID+房间ID信息 确定数据是唯一的
 	// 数据保存操作
-	// --> 操作的
-	this.MapSafe.Put(StrLogin_Name+"|"+util.MD5_LollipopGO(strRoom)+"|connect", "")
+	// --> 操作的 ; 保存玩家信息
+	this.MapSafe.Put(util.MD5_LollipopGO(strRoom)+"|connect", this)
 
 	return
 }
