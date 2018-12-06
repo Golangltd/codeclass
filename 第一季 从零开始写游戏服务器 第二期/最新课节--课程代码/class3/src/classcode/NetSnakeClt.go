@@ -58,8 +58,10 @@ func (this *NetDataConn) EntryGameSnake(ProtocolData map[string]interface{}) {
 	// 发送数据给客户端了
 	this.PlayerSendMessage(data)
 	// 保存同一个玩家的数据信息
+	// 数据管理 --- data
 	if data.RoomID != 0 {
-		this.MapSafe.Put(strCode+"|"+util.MD5_LollipopGO(strRoom)+"|room", this)
+		this.MapSafe.Put(strCode+"|"+util.MD5_LollipopGO("1")+"|room", this)
+		PlayerSendBroadcastToRoomPlayer(1)
 	}
 	return
 }
@@ -93,6 +95,7 @@ func (this *NetDataConn) LoginGameSnake(ProtocolData map[string]interface{}) {
 		return
 	}
 	StrLogin_Name := ProtocolData["Login_Name"].(string)
+	_ = StrLogin_Name
 	// StrLogin_PW := ProtocolData["Login_PW"].(string)
 	// 数据库验证
 	// 1 获取到UID 信息

@@ -61,11 +61,16 @@ func PlayerSendBroadcastToRoomPlayer(iroomID int) {
 				switch v.(interface{}).(type) {
 				case *NetDataConn:
 					{ // 发送数据操作
-						data := &Proto2.Net_Kicking_Player{
-							Protocol:  Proto.GameNet_Proto,
-							Protocol2: Proto2.Net_Kicking_PlayerProto2,
-							ErrorCode: 10001,
+						data := &Proto2.C2S_PlayerAddGame{
+							Protocol:      Proto.GameNet_Proto,
+							Protocol2:     Proto2.Net_Kicking_PlayerProto2,
+							OpenID:        "1212334",
+							RoomID:        1,
+							PlayerHeadURL: "11",
+							Init_X:        13,
+							Init_Y:        10,
 						}
+						// 发送数据
 						v.(interface{}).(*NetDataConn).PlayerSendMessage(data)
 					}
 				}
@@ -73,5 +78,4 @@ func PlayerSendBroadcastToRoomPlayer(iroomID int) {
 		}
 	}
 	// -------------------------------------------------------------------------
-	return
 }
