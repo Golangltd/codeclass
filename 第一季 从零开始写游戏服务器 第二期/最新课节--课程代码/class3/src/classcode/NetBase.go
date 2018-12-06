@@ -62,8 +62,8 @@ func PlayerSendBroadcastToRoomPlayer(iroomID int) {
 				case *NetDataConn:
 					{ // 发送数据操作
 						data := &Proto2.C2S_PlayerAddGame{
-							Protocol:      Proto.GameNet_Proto,
-							Protocol2:     Proto2.Net_Kicking_PlayerProto2,
+							Protocol:      Proto.G_Snake_Proto,
+							Protocol2:     Proto2.C2S_PlayerAddGameProto2,
 							OpenID:        "1212334",
 							RoomID:        1,
 							PlayerHeadURL: "11",

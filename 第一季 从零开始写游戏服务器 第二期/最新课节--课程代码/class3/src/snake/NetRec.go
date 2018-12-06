@@ -111,11 +111,23 @@ func HandleCltProtocol2Snake(protocol2 interface{}, ProtocolData map[string]inte
 			// 玩家进入游戏的协议
 			EntryGameSnakeRec(ProtocolData)
 		}
+	case float64(Proto2.C2S_PlayerAddGameProto2):
+		{
+			fmt.Println("贪吃蛇:玩家进入房间--匹配成功!!!")
+			// 玩家进入游戏的协议
+			AddGameSnakeRec(ProtocolData)
+		}
 
 	default:
 		panic("子协议：不存在！！！")
 	}
 
+	return
+}
+
+func AddGameSnakeRec(ProtocolData map[string]interface{}) {
+	StrPlayerHeadURL := ProtocolData["PlayerHeadURL"].(string)
+	fmt.Println("贪吃蛇:玩家进入房间，头像ID:", StrPlayerHeadURL)
 	return
 }
 
