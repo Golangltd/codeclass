@@ -87,3 +87,10 @@ func GameServerReceive(ws *websocket.Conn) {
 func base64Decode(src []byte) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(string(src))
 }
+
+// 初始化贪吃蛇地图数据
+func Init_SnakeMap() {
+	// 1 首先地图是20*20大小的数据
+	// 2
+	return
+}

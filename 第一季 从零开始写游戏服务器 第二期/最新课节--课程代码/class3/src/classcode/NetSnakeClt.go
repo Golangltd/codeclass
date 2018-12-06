@@ -7,6 +7,20 @@ import (
 	"fmt"
 )
 
+// 玩家的坐标信息
+type SnakePlayer struct {
+	OpenID string
+	X_Pos  int
+	Y_Pos  int
+}
+
+// 食物的坐标
+// 变化的、被吃掉后重新生成。
+type SnakeFood struct {
+	X_Pos int
+	Y_Pos int
+}
+
 // 子协议的处理
 func (this *NetDataConn) HandleCltProtocol2Snake(protocol2 interface{}, ProtocolData map[string]interface{}) {
 
