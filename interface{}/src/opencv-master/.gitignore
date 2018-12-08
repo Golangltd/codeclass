@@ -1,0 +1,4 @@
+*.obj
+*.o
+
+zz_build_*
