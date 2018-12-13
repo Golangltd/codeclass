@@ -91,6 +91,7 @@ func base64Decode(src []byte) ([]byte, error) {
 // 初始化贪吃蛇地图数据
 func Init_SnakeMap() {
 	// 1 首先地图是20*20大小的数据
-	// 2
+	// 2 数据操作
+	// 3 add_func()
 	return
 }
