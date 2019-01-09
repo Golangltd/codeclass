@@ -1,0 +1,222 @@
+社区版本 LollipopGo v1.0.20190104 版本为例
+
+详细代码参考彬哥与Go语言 文章：https://www.jianshu.com/p/f431db1ed7dd
+
+游戏服务器的消息的序列、反序列化，通俗一点讲就是消息的解析和封装
+
+LollipopGo 采用json做为传输的方式来发送和接受网络数据
+
+首先  json的序列化或者反序列化在很大程度上直接影响服务器处理数据能力的硬性指标
+
+大家好，我是彬哥，本节给大家讲下go语言服务器游戏消息的序列化相关，抛砖引玉了，主要是针对Go语言游戏服务器开发消息的序列化使用。
+
+先给大家看了小demo，LollipopGo框架版本v1.0.20190104 ,demo代码如下：
+
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "reflect"
+)
+
+/*
+   Go语言中 结构体转json的序列化；在LollipopGo v1.0.20190104 版本做了详细的说明
+   1 结构体转字符串
+   2 字符串转json
+*/
+
+var G_GolangltdMap map[int]*GolangLtd
+
+type GolangLtd struct {
+    UID  int
+    Name string
+}
+
+func init() {
+
+    G_GolangltdMap = make(map[int]*GolangLtd)
+
+    data := &GolangLtd{
+        UID:  1,
+        Name: "www.Golang.Ltd",
+    }
+
+    G_GolangltdMap[data.UID] = data
+
+    fmt.Println(G_GolangltdMap)
+    // 序列化操作
+    b, er := json.Marshal(G_GolangltdMap)
+    if er == nil {
+        fmt.Println(string(b))
+    }
+
+    msgs := make(map[int]*GolangLtd)
+
+    // 反序列化
+    err := json.Unmarshal(b, &msgs)
+    if err != nil {
+        fmt.Println("Can't decode json message", err)
+    } else {
+        fmt.Println("type:", reflect.TypeOf(msgs[1].UID))
+    }
+}
+
+func main() {
+    return
+}
+
+运行结果
+LollipopGo 游戏服务器框架的部分核心代码：
+
+转换结构：
+
+// 结构体数据类型
+type Requestbody struct {
+    req string
+}
+
+//json转化为map:数据的处理
+func (r *Requestbody) Json2map() (s map[string]interface{}, err error) {
+    var result map[string]interface{}
+    if err := json.Unmarshal([]byte(r.req), &result); err != nil {
+        glog.Error("Json2map:", err.Error())
+        return nil, err
+    }
+    return result, nil
+}
+网络处理 结构：
+
+func (this *NetDataConn) SyncMeassgeFun(content string) {
+    var r Requestbody
+    r.req = content
+
+    if ProtocolData, err := r.Json2map(); err == nil {
+        // 处理我们的函数
+        this.HandleCltProtocol(ProtocolData["Protocol"], ProtocolData["Protocol2"], ProtocolData)
+    } else {
+        glog.Error("解析失败：", err.Error())
+    }
+}
+解析的消息结构处理,主协议处理：
+
+func (this *NetDataConn) HandleCltProtocol(protocol interface{}, protocol2 interface{}, ProtocolData map[string]interface{}) {
+
+    defer func() { // 必须要先声明defer，否则不能捕获到panic异常
+        if err := recover(); err != nil {
+            strerr := fmt.Sprintf("%s", err)
+            //发消息给客户端
+            ErrorST := Proto2.G_Error_All{
+                Protocol:  Proto.G_Error_Proto,      // 主协议
+                Protocol2: Proto2.G_Error_All_Proto, // 子协议
+                ErrCode:   "80006",
+                ErrMsg:    "亲，您发的数据的格式不对！" + strerr,
+            }
+            // 发送给玩家数据
+            this.PlayerSendMessage(ErrorST)
+        }
+    }()
+
+    // 分发处理  --- 首先判断主协议存在，再判断子协议存在不
+
+    //glog.Info(protocol)
+    //glog.Info(Proto.GameData_Proto)
+
+    //类型
+    glog.Info(typeof(protocol))
+    glog.Info(typeof(protocol2))
+    //glog.Info(typeof(Proto.GameData_Proto))
+
+    switch protocol {
+    case float64(Proto.G_GateWay_Proto):
+        {
+            // 网关协议
+            this.HandleCltProtocol2GW(protocol2, ProtocolData)
+        }
+    case float64(Proto.GameData_Proto):
+        {
+            // 子协议处理
+            this.HandleCltProtocol2(protocol2, ProtocolData)
+
+        }
+    case float64(Proto.GameDataDB_Proto):
+        { // DB_server
+
+        }
+    case float64(Proto.G_GameDSQ_Proto):
+        { // DSQ_server
+            this.HandleCltProtocol2DSQ(protocol2, ProtocolData)
+        }
+    case float64(Proto.G_GameGlobal_Proto):
+        { // global_server
+            this.HandleCltProtocol2GL(protocol2, ProtocolData)
+        }
+    case float64(Proto.GameNet_Proto):
+        {
+            this.HandleCltProtocol2Net(protocol2, ProtocolData)
+        }
+    case float64(Proto.G_Snake_Proto):
+        { // 贪吃蛇的主协议
+            fmt.Println("贪吃蛇的主协议!!!")
+            this.HandleCltProtocol2Snake(protocol2, ProtocolData)
+
+        }
+    default:
+        panic("主协议：不存在！！！")
+    }
+    return
+}
+子协议处理，代码如下：
+
+// 子协议的处理
+func (this *NetDataConn) HandleCltProtocol2(protocol2 interface{}, ProtocolData map[string]interface{}) {
+
+    switch protocol2 {
+    case float64(Proto2.C2S_PlayerLoginProto2):
+        {
+            // 功能函数处理 --  用户登陆协议
+            this.PlayerLogin(ProtocolData)
+        }
+    case float64(Proto2.C2S_PlayerRunProto2):
+        {
+            // 功能函数处理 --  用户行走、奔跑
+            this.PlayerRun(ProtocolData)
+        }
+    default:
+        panic("子协议：不存在！！！")
+    }
+
+    return
+}
+功能函数，解析举例：
+
+// 用户奔跑的协议
+func (this *NetDataConn) PlayerRun(ProtocolData map[string]interface{}) {
+    if ProtocolData["OpenID"] == nil {
+        panic(" 主协议 GameData_Proto ，子协议 C2S_PlayerRunProto2,玩家行走功能数据错误！")
+        return
+    }
+
+    StrOpenID := ProtocolData["OpenID"].(string)
+    StrRunX := ProtocolData["StrRunX"].(string)
+    StrRunY := ProtocolData["StrRunY"].(string)
+    StrRunZ := ProtocolData["StrRunZ"].(string)
+
+    // 广播协议
+    data := &Proto2.S2C_PlayerRun{
+        Protocol:  Proto.GameData_Proto,
+        Protocol2: Proto2.S2C_PlayerRunProto2,
+        OpenID:    StrOpenID,
+        StrRunX:   StrRunX,
+        StrRunY:   StrRunY,
+        StrRunZ:   StrRunZ,
+    }
+    // 发送数据给客户端了
+    //Broadcast(data)
+    this.PlayerSendMessage(data)
+    return
+}
+      每天坚持学习1小时Go语言，大家加油，我是彬哥，下期见！如果文章中不同观点、意见请文章下留言或者关注下方订阅号反馈！
+
+
+  
