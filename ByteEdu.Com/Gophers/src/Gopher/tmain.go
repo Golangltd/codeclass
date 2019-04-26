@@ -83,8 +83,15 @@ func IndexHandler(w http.ResponseWriter, req *http.Request) {
 						}
 						return
 					} else if strItype == "2" { // 登陆
+						_, ok := PlayerDataG[LoginName[0]]
+						if ok {
+							fmt.Fprintln(w, "登陆成功！")
 
-						return
+							return
+						} else {
+							fmt.Fprintln(w, "用户名或密码错误！")
+							return
+						}
 					}
 
 					fmt.Fprintln(w, "类型错误")
