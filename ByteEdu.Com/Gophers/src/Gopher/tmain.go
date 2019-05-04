@@ -4,6 +4,7 @@ import (
 	"Proto_Go"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 )
 
@@ -16,6 +17,21 @@ type PlayerData struct {
 	LoginName string
 	LoginPW   string
 	Lev       string // 职位
+	Score     int
+}
+
+type ByteEduList []PlayerData
+
+func (this ByteEduList) Len() int {
+	return len(this)
+}
+
+func (this ByteEduList) Less(i, j int) bool {
+	return this[i].Score < this[j].Score
+}
+
+func (this ByteEduList) Swap(i, j int) {
+	this[i], this[j] = this[j], this[i]
 }
 
 //------------------------------------------------------------------------------
@@ -98,6 +114,58 @@ func IndexHandler(w http.ResponseWriter, req *http.Request) {
 					//------------------------------------------------------
 					return
 				case strconv.Itoa(Proto.C2S_GetRankProto2):
+					// 排行协议
+					LoginName, bLoginName := req.Form["LoginName"]
+					Score, bScore := req.Form["Score"]
+					if bLoginName && bScore {
+						v, ok := PlayerDataG[LoginName[0]]
+						iscore, _ := strconv.Atoi(Score[0])
+						// 一：数据的保存
+						if ok {
+							// 1. 保存的数据是否小于当前数据
+							if v.Score < iscore {
+								data := &PlayerData{
+									OpenID:    LoginName[0],
+									LoginName: LoginName[0],
+									LoginPW:   v.LoginPW,
+									Lev:       v.Lev, // 职位
+									Score:     iscore,
+								}
+								// 保存
+								PlayerDataG[LoginName[0]] = data
+							}
+						} else {
+							// 内存不存在的情况下保存
+							data := &PlayerData{
+								OpenID:    LoginName[0],
+								LoginName: LoginName[0],
+								Lev:       "军师",
+								Score:     iscore,
+							}
+							// 保存
+							PlayerDataG[LoginName[0]] = data
+						}
+						// 二：排行
+						// 1. map ---> slice
+						playerdata := make([]PlayerData, len(PlayerDataG)+1)
+						i := 0
+						for _, v := range PlayerDataG {
+							i++
+							var data PlayerData
+							data.OpenID = v.OpenID
+							data.LoginName = v.LoginName
+							data.LoginPW = v.LoginPW
+							data.Lev = v.Lev
+							data.Score = v.Score
+							playerdata[i] = data
+						}
+						//2. Sort
+						sort.Sort(ByteEduList(playerdata))
+
+						// 三：返回数据给客户端
+						fmt.Fprintln(w, playerdata)
+						return
+					}
 					return
 				default:
 					fmt.Fprintln(w, "88902")
