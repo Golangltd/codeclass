@@ -70,3 +70,8 @@ http://www.byteedu.com/thread-723-1-1.html
 第十五节  登录成功后，场景切换到游戏
 http://www.byteedu.com/thread-731-1-1.html
 (出处: 字节教育)
+
+
+代码托管：
+https://github.com/Golangltd/codeclass/tree/master/ByteEdu.Com
+视频连接：http://www.byteedu.com/thread-283-1-1.html
