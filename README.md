@@ -16,9 +16,9 @@ QQ群
 -----------
 [简书专栏](https://www.jianshu.com/u/9f8cf18345b5)
 
-腾讯云+社区专栏
+ByteEdu教育平台
 -----------
-[腾讯专栏](https://cloud.tencent.com/developer/column/2170)
+[ByteEdu教育平台](http://www.byteedu.com)
 
 Golang语言社区
 -----------
@@ -31,8 +31,8 @@ Golang语言社区
 <li>同时我们的免费课程也在持续更新中; 点击访问：<a href="https://study.163.com/provider/400000000538037/index.htm?share=2&shareId=400000000538037" title="Title">网易云课堂</a></li>
 <li>同时我们的免费课程也在持续更新中; 点击访问：<a href="http://space.bilibili.com/389368547?" title="Title">B站(bilibili.com)</a></li>
 </ol>
-<img src="第一季%20Go语言基础、进阶、提高课程/pic/xuanc.png"/>
+<img src="ByteEdu.Com斗兽棋全栈课程/宣传图片.jpg"/>
 
-字节教育(www.ByteEdu.Com)
+贝游特教育(www.ByteEdu.Com)
 =============
 <li>专业游戏全栈开发IT教学平台，后端仅Golang语言</li>
