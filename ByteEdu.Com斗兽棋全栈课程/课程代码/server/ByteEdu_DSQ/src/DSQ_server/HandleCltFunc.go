@@ -3,27 +3,32 @@ package main
 import (
 	"DSQ_login/Proto"
 	//	"DSQ_server/Player"
+	"DSQ_server/Match"
 	"DSQ_server/Proto"
 	"LollipopGo/LollipopGo/network"
 	"encoding/json"
 	"fmt"
 )
 
-/*
+// 玩家匹配
+func (this *DSQGame) PlayerPiPei(ProtocolData map[string]interface{}) {
+	fmt.Println("PlayerPiPei-------------------", ProtocolData)
+	strOpenID := ProtocolData["OpenID"].(string)
 
-type PlayerData struct {
-	UID    int    // 玩家UID
-	OpenID string // MD5 字符串
-	Name   string // 玩家名字
-	Avatar string // 玩家头像
-	Level  int    // 玩家等级
-	Coin   int64  // 玩家金币
-	// ... ...
+	// 匹配逻辑
+	// 1. 队列形式-- chan
+	// 2. 匹配成功
+	val, err := this.MapSafe.Get(strOpenID + "|User")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("--------------------val:", val)
+	DSQ_match.PutMatchList(val.(*DSQGame).Player)
+	return
 }
 
-
-*/
-
+// 玩家登录
 func (this *DSQGame) PlayerLogin(ProtocolData map[string]interface{}) {
 	fmt.Println("PlayerLogin-------------------", ProtocolData)
 	strtoken := ProtocolData["Tocken"].(string)
