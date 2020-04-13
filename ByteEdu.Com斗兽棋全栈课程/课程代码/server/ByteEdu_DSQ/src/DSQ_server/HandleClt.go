@@ -28,6 +28,18 @@ func (this *DSQGame) HandleCltProtocol2(protocol2 interface{}, ProtocolData map[
 		MapSafe:    M,
 	}
 	switch protocol2 {
+	case float64(Proto_DSQGame.C2G_Player_RenShu_Proto):
+		{
+			ConnectionData.PlayerRenShu(ProtocolData)
+		}
+	case float64(Proto_DSQGame.C2G_Player_XingZou_Proto):
+		{
+			ConnectionData.PlayerXingZou(ProtocolData)
+		}
+	case float64(Proto_DSQGame.C2G_Player_FanPai_Proto):
+		{
+			ConnectionData.PlayerFanPai(ProtocolData)
+		}
 	case float64(Proto_DSQGame.C2G_Player_PiPeiGame_Proto):
 		{
 			ConnectionData.PlayerPiPei(ProtocolData)

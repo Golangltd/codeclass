@@ -16,7 +16,7 @@ import (
 // 链接存储结构
 type DSQGame struct {
 	Connection *websocket.Conn
-	StrMD5     string // 唯一ID
+	StrMD5     string //  目前可以设计为房间ID信息
 	MapSafe    *concurrent.ConcurrentMap
 	Player     *Player_DSQ.PlayerData
 }

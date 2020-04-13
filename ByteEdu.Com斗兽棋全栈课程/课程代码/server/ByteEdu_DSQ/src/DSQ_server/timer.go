@@ -92,6 +92,7 @@ func MatchTimer() {
 					  3. 如果 第2步骤seatdata 已经全部有数据，以第1步骤的roomid创建房间信息
 					  4. 否则继续循环数据，添加到 roomdata成员变量seatdata
 					*/
+					strroom := strconv.Itoa(GetGRoomDataLen())
 					GRoomManagerPtr.RoomLock.RLock()
 					roomdatatmp := GRoomManagerPtr.GRoomData[strconv.Itoa(GetGRoomDataLen())]
 					GRoomManagerPtr.RoomLock.RUnlock()
@@ -119,8 +120,14 @@ func MatchTimer() {
 						LeftTime:   20,
 					}
 
+					roomdatatmp.RoomID = strroom
+					roomdatatmp.TurnID = 0 // 先手操作
 					roomdatatmp.SeatData[0] = seatdataa
 					roomdatatmp.SeatData[1] = seatdatab
+					roomdatatmp.ChessData = InitDSQ(DSQ_QI)
+					//roomdatatmp.ChessDataClient = [4][4]int{}
+					vala.(*DSQGame).StrMD5 = strroom
+					valb.(*DSQGame).StrMD5 = strroom
 
 					/*
 						val  是什么数据 -->
@@ -162,9 +169,45 @@ func MatchTimer() {
 					fmt.Println(data)
 					vala.(*DSQGame).PlayerSendMessage(data)
 					valb.(*DSQGame).PlayerSendMessage(data)
+					GRoomManagerPtr.GRoomData[strroom] = roomdatatmp
+					go MatchTimer2(strroom)
 					break
 				}
 			}
+		}
+	}
+}
+
+/*
+   玩家匹配成功后，服务器发送广播消息，延迟2秒发送
+   1.  确保客户端在跳转界面后收到消息，例如 从匹配界面（主界面）--2s--> 到 游戏主界面
+   2.  确保服务器消息可以正常被客户端接收到
+   3.  功能性timer，使用完就自动释放，不需要常驻内存
+*/
+func MatchTimer2(roomid string) {
+	startTumer := time.NewTicker(time.Second * 2)
+	for {
+		select {
+		case <-startTumer.C:
+
+			GRoomManagerPtr.RoomLock.RLock()
+			roomdatatmp := GRoomManagerPtr.GRoomData[roomid]
+			GRoomManagerPtr.RoomLock.RUnlock()
+
+			data := Proto_DSQGame.Broadcast_PiPeiGame{
+				Protocol:  10,
+				Protocol2: 4,
+				Bsucc:     true,
+				RoomData:  roomdatatmp,
+			}
+			fmt.Println("---------------======================data:", data)
+			vala, _ := M.Get(roomdatatmp.SeatData[0].PlayerData.OpenID + "|User")
+			valb, _ := M.Get(roomdatatmp.SeatData[1].PlayerData.OpenID + "|User")
+			vala.(*DSQGame).PlayerSendMessage(data)
+			valb.(*DSQGame).PlayerSendMessage(data)
+			// 功能性timer，使用完就自动释放，不需要常驻内存
+			startTumer.Stop()
+			return
 		}
 	}
 }
