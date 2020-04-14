@@ -23,6 +23,7 @@ func (this *DSQGame) GetRoomID(stropenid string) string {
 }
 
 // 客户端与服务器的棋盘位置对应关系
+// 作业
 func (this *DSQGame) GetClientAndServerPos(strpos string) (int, int) {
 	if strpos == "1" {
 		return 0, 0
@@ -107,7 +108,7 @@ func (this *DSQGame) PlayerRenShu(ProtocolData map[string]interface{}) {
 	//广播消息
 	data := &Proto_DSQGame.Broadcast_GameOver{
 		Protocol:  10,
-		Protocol2: 10,
+		Protocol2: Proto_DSQGame.Broadcast_GameOver_Proto,
 		GameOver:  gameover,
 	}
 	vala, _ := M.Get(roomdata.SeatData[0].PlayerData.OpenID + "|User")
@@ -115,6 +116,7 @@ func (this *DSQGame) PlayerRenShu(ProtocolData map[string]interface{}) {
 	vala.(*DSQGame).PlayerSendMessage(data)
 	valb.(*DSQGame).PlayerSendMessage(data)
 	// 注意点： 结算信息的数据持久化，把结算数据保存到DB后者redis等---GM统计后者前端会显示个人战绩的信息
+	// 作业
 	// 逻辑缺失*******************************
 	// 释放房间信息
 	GRoomManagerPtr.RoomLock.RLock()
@@ -160,6 +162,7 @@ func (this *DSQGame) PlayerXingZou(ProtocolData map[string]interface{}) {
 		// 返回客户端无法移动
 		return
 	}
+	// 作业
 	// ????? 作业的逻辑
 
 	// 检查是否是同一战队
@@ -263,6 +266,11 @@ func (this *DSQGame) PlayerFanPai(ProtocolData map[string]interface{}) {
 		OpenID:    strOpenID,
 		StrPos:    StrPos,
 	}
+	if roomdata.SeatData[0].PlayerData.OpenID == strOpenID {
+		data.SeatID = 0
+	} else {
+		data.SeatID = 1
+	}
 	// 广播协议
 	vala, _ := M.Get(roomdata.SeatData[0].PlayerData.OpenID + "|User")
 	valb, _ := M.Get(roomdata.SeatData[1].PlayerData.OpenID + "|User")
@@ -321,7 +329,7 @@ func (this *DSQGame) PlayerLogin(ProtocolData map[string]interface{}) {
 	// 服务器的数据连接信息保存
 	// 1. 玩家的链接信息，conn , playerdata 等等 需要进行保存。
 	// 2. 玩家的消息的推送，服务器通知玩家（服务器广播）。
-	// 3. 网络信息的断线重来。sss
+	// 3. 网络信息的断线重来。
 	// 数据保存
 	onlineUser := &DSQGame{
 		Connection: this.Connection,

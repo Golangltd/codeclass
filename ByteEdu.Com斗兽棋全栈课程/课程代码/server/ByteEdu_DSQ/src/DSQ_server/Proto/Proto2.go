@@ -84,7 +84,7 @@ type C2G_Player_FanPai struct {
 	Protocol  int
 	Protocol2 int
 	OpenID    string // 告诉服务器，谁翻了牌
-	// SeatID    string // 和openid字段 同样的效果 0 1
+	//SeatID    string // 和openid字段 同样的效果 0 1
 	StrPos string // 位置信息
 	RoomID string // 告诉服务器，我是再那个房间下；非必须的？，通过玩家的唯一ID去获取到房间的信息
 }
@@ -104,6 +104,7 @@ type Broadcast_Player_FanPai struct {
 	IChess    int    // 棋盘的数据 1-16的枚举值
 	OpenID    string // 告诉服务器，谁翻了牌
 	StrPos    string // 位置信息
+	SeatID    int
 }
 
 // -----------------------------------------------------------------------------

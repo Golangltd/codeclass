@@ -32,7 +32,8 @@ func Timer() {
 		case <-time.After(time.Millisecond * 1):
 			{
 				// 进行数据验证 -- 确保我们链接信息完全获取到
-				// ???? 不够严谨，如果不验证玩家数据是否保存成功，会导致客户端一个匹配成功，无法游戏。
+				// 不够严谨，如果不验证玩家数据是否保存成功，会导致客户端一个匹配成功，无法游戏。
+				// 作业，剔除不在线玩家
 				// 确保2个人， 如果满足len(Gmap)%2 == 0  --->  GMatchChan
 				if len(Gmap)%2 == 0 && len(Gmap) != 0 {
 					datatmp := make(map[string]*Player_DSQ.PlayerData)
