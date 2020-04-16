@@ -1,0 +1,55 @@
+package main
+
+import (
+	"Proto"
+	"XZ_server/Proto"
+	_ "fmt"
+	"glog-master"
+
+	"code.google.com/p/go.net/websocket"
+)
+
+// 主协议处理
+func (this *DSQGame) HandleCltProtocol(protocol interface{}, protocol2 interface{}, ProtocolData map[string]interface{}, Connection *websocket.Conn) interface{} {
+	switch protocol {
+	case float64(Proto.G_GameDSQ_Proto):
+		{
+			this.HandleCltProtocol2(protocol2, ProtocolData, Connection)
+		}
+	default:
+		glog.Info("protocol default")
+	}
+	return 0
+}
+
+func (this *DSQGame) HandleCltProtocol2(protocol2 interface{}, ProtocolData map[string]interface{}, Connection *websocket.Conn) interface{} {
+	ConnectionData := &DSQGame{
+		Connection: Connection,
+		MapSafe:    M,
+	}
+	switch protocol2 {
+	case float64(Proto_DSQGame.C2G_Player_RenShu_Proto):
+		{
+			ConnectionData.PlayerRenShu(ProtocolData)
+		}
+	case float64(Proto_DSQGame.C2G_Player_XingZou_Proto):
+		{
+			ConnectionData.PlayerXingZou(ProtocolData)
+		}
+	case float64(Proto_DSQGame.C2G_Player_FanPai_Proto):
+		{
+			ConnectionData.PlayerFanPai(ProtocolData)
+		}
+	case float64(Proto_DSQGame.C2G_Player_PiPeiGame_Proto):
+		{
+			ConnectionData.PlayerPiPei(ProtocolData)
+		}
+	case float64(Proto_DSQGame.C2G_Player_Login_Proto):
+		{
+			ConnectionData.PlayerLogin(ProtocolData)
+		}
+	default:
+		glog.Info("protocol2 default")
+	}
+	return 0
+}
