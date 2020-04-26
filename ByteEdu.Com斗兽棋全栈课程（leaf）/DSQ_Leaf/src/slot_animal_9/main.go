@@ -22,5 +22,6 @@ func main() {
 		game.Module,
 		gate.Module,
 		login.Module,
+		// DDZ.Module,
 	)
 }

@@ -1,10 +1,13 @@
 package internal
 
 import (
+	"slot_animal_9/common/ST"
+
 	"github.com/name5566/leaf/gate"
 )
 
-// 定义个全局变量
+// 定义个全局变量 key  == 玩家的唯一的ID
+var G_Player map[string]*conn.DSQGame
 
 func init() {
 	// 注册事件
@@ -17,6 +20,7 @@ func init() {
 func rpcNewAgent(args []interface{}) {
 	a := args[0].(gate.Agent)
 	_ = a
+	//
 }
 
 func rpcCloseAgent(args []interface{}) {
