@@ -1,0 +1,4 @@
+game_stock_fruit=0
+game_stock_men=0
+game_stock_lotus=0
+jackpot_pool=1000000000

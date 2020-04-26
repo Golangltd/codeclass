@@ -1,0 +1,53 @@
+syntax = "proto3";
+package msg;
+
+//消息后缀为ST，表示一种状态；为EV表示用户触发的某种事件；为NT表示服务端生成的通知
+//消息后缀为Req，表示客户端向服务端发送的请求
+
+//----------------------------客户端请求--------------------------
+//用户认证，id:1，玩家进入房间，带惟一ID
+message UserEntryGameReq {
+    int64 Timestamp = 1;
+    uint64 UserID = 2;
+    string Token = 3;
+    int32 Version = 4; // 客户端版本，现在传0就行
+    bool IsReconnect = 5; //如果用户是点击返回游戏进来的，会将上一局游戏结果(108)推送过去，然后用户要点击继续游戏才会变成准备状态；
+    string IP = 6; //客户端上传ip
+}
+
+//玩家压注(开始游戏)，id:2
+message UserYaZhuReq {
+    int64 Timestamp = 1;
+    int32 UserID = 2;     // UID信息
+    int64 CoinNum = 3;    // 压注的总金额
+}
+
+//玩家退出，id:3  服务器需要清除玩家数据
+message UserExitGameReq {
+    int64 Timestamp = 1;
+    int32 UserID = 2;     // UID信息，服务器清除玩家数据
+}
+
+//--------------------------服务端推送------------------------------
+// 玩家进入游戏，id=101
+message UserEntryGameResp {
+	bool Bsucc  = 1 ;    // 返回进入房间是否成功
+}
+
+//玩家压注(开始游戏):102
+message UserYaZhuResp {
+    int64 Timestamp = 1;      // 当前时间戳
+    repeated int32 Icon = 2;  // 棋子
+    bool BQuanPan  = 3;       // 是否是全盘奖
+    int64 CoinNum = 4;        // 中奖金额
+}
+
+//推送彩金:103
+message GameCaiJinResp {
+    int64 Timestamp = 1; // 当前时间戳
+}
+
+//退出:104
+message UserExitGameResp {
+    bool Bsucc  = 1;        // 返回进入房间是否成功,可以不发送
+}
