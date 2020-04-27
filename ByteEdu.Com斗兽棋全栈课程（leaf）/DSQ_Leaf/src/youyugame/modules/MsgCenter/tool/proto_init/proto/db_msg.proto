@@ -1,0 +1,19 @@
+syntax = "proto3";
+package db_msg;
+
+
+//----------------------------客户端请求sh--------------------------
+//用户认证，id:1，玩家进入房间，带惟一ID
+message UserTockenReq {
+    int64 Timestamp = 1;
+    uint64 UserID = 2;
+    string Token = 3;
+}
+
+
+
+//--------------------------服务端推送------------------------------
+// 玩家进入游戏，id=101
+message UserTockenResp {
+	bool Bsucc  = 1 ;    // 返回进入房间是否成功
+}

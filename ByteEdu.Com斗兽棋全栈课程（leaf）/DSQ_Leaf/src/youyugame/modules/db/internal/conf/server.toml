@@ -1,0 +1,49 @@
+[server]
+# websocket端口
+WSAddr="0.0.0.0:9023"
+# Http接口
+HTTPAddr = "0.0.0.0:9003"
+# 服务器对外监听地址
+URL="ws://0.0.0.0:9023"
+# 性能检测用的telnet端口
+ProfilePort=3338
+# 房间配置，索引是id，值是乘以1000之后的，ai是机器人开关，twice是加倍开关
+RoomConfig = [
+    {id=0, ai=true, botIndex=1, botLimit=[50000, 300000]},
+    {id=1, ai=true, botIndex=1, botLimit=[300000, 800000]},
+    {id=2, ai=true, botIndex=1, botLimit=[800000, 1200000]},
+    {id=3, ai=true, botIndex=1, botLimit=[1200000, 10000000]},
+]
+# 大奖记录门槛
+CreditRecordLimit = 30
+# 配置文件热加载开关，如果接入配置中心可以关闭
+HotReload=true
+
+
+[db]
+Type="mysql"
+Host="root:S$yvQb%Vp4@tcp(192.168.0.11:3306)/de?charset=utf8mb4&parseTime=True"
+Debug=false
+
+[mongo]
+Host="mongodb://user_dev:a1142304f6dcccc1@192.168.0.11:27017/?authSource=admin"
+
+[redis]
+Host="192.168.0.11:6379"
+#password=""
+
+[CommonRedis]       # 公共redis
+Host="192.168.0.11:6379"
+Index=8
+
+[imRedis]       # 闪告用的redis
+Host="192.168.0.11:6379"
+Index=10
+
+[streamRedis]
+Host="192.168.0.11:6379"
+Index=0
+
+[log]
+Path="/var/log/teen_patti"
+Level="debug"
